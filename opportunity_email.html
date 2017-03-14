@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="assets/ico/favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+
+    <title>Jaeyoon Jung - The Pitcher</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/font-awesome.min.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html">Jaeyoon Jung</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="index.html#works">Works</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
+	<div id="workwrap">
+	    <div class="container">
+			<div class="row">
+				<div class="col-lg-6 col-lg-offset-3">
+					<h1>The Pitcher</h1>
+					<h4>A data product to support account strategists' performance.</h4>
+				</div>
+			</div>
+	    </div> 
+	</div>
+
+	<section id="summary"></section>
+	<div class="container">
+		<div class="row text-left mt">
+			<div class="col-lg-8 col-lg-offset-2" style = "font-family: 'Josefin Sans', sans-serif">
+				<h2>ABOUT THE PROJECT</h2>
+                <br>
+                <p>The Pitcher is a daily email notification I built at Criteo to efficiently inform account strategists of their potential business opportunities. </p>
+                <p>It is difficult for account strategists to keep track of tens of clients while timely preparing for market seasonality (Christmas, Black Friday, etc.). The goal of this tool was to help them decide if they can pitch businesses to their clients by examining each account’s and its competitors’ KPIs. </p>
+                <br>
+                <p> All works are automated using R. </p>
+			</div>
+			<div class="col-lg-10 col-lg-offset-1 mt">
+				<img class="img-responsive" src="assets/img/pr01.jpg">
+				<br>
+				<img class="img-responsive" src="assets/img/pr02.jpg">
+			</div>
+        </div>
+    </div>
+
+    <div class='container'>
+        <div class='row text-left mt'>
+            <div class='col-lg-8 col-lg-offset-2' style = "font-family: 'Josefin Sans', sans-serif">
+                <h4>HOW IT WORKS</h4>
+                <br>
+                <p>Some details have been omitted for confidentiality.</p>
+                <p>The underlying R code queries and checks 4 components:</p>
+                <ul>
+                    <li> <b>YoY Comparison</b>: did a client spend more with us one year ago? </li>
+                    <li> <b>Huge Influencer</b>: Monitor spend by large accounts in a given market. If there is a more than 10 % increase in any one of them, flag the list of accounts with large cookie overlap.  </li>
+                    <li> <b>Competitor Monitoring</b>: For each account, identify top 5 competitors by measuring its performance relative to others. Query expected spend of each client and its competitors for the last 2 weeks. If their trend lines start diverging noticeably, flag it. </li>
+                    <li> <b>KPI Trend</b>: Flag clients whose KPI <i>started</i> trending downward. </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+	<footer id="footerwrap">
+        <p class="row centered">
+            Copyright 2017 |
+            <a href="mailto:jyjung@princeton.edu">E-mail</a>
+             |
+            <a href="https://www.linkedin.com/in/jaeyoon-jung-757561b5">LinkedIn</a>
+             |
+            <a href="https://github.com/jaeyoon-jung">GitHub</a>
+        </p>
+    </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+  </body>
+</html>
