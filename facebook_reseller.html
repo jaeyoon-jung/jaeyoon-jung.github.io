@@ -91,10 +91,10 @@
                 <ul>
                     <li><b>published_hour:</b> (int) At what time of the day was a post created? If publshed_at does not have time, impute it with the most frequent value. </li>
                     <li><b>description_length:</b> (int) Word count of description. 0 if NaN</li>
-                    <li><b>picture_label_occurences:</b>(int) How many picture labels does the post have? 0 if NaN</li>
-                    <li><b>hashtags:</b> (int) How many hashtags does the post have?</li>
+                    <li><b>picture_label_occurences:</b>(int) How many picture labels does a post have? 0 if NaN</li>
+                    <li><b>hashtags:</b> (int) How many hashtags does a post have?</li>
                     <li><b>punctuations:</b> (int) How many exclamations mark does the post have?</li>
-                    <li><b>has_contact:</b> (int) Did the author of a post mention any personal contact? 1 is true, 0 otherwise.</li>
+                    <li><b>has_contact:</b> (int) Did the author of a post mention any personal contact? 1 if true, 0 otherwise.</li>
                     <li><b>uppercase_count:</b> (int) How many uppercase characters are in description?</li>
                     <li><b>uppercase_ratio:</b> (float) Ratio between uppercase_count and character count of description</li>
                     <li><b>has_pic_url:</b> (int) Does the post have a picture_url? 1 if true, 0 otherwise.</li>
@@ -102,7 +102,7 @@
                 <br>
                 <h5>Natural Language Processing</h5>
                 <br>
-                <p> Because there is a lot of overlap of features  across different posts, it is import to extract more useful information from description data. To derive some meaning from the <b>content</b> of descriptions, I extracted term frequency–inverse document frequency (tf-idf) from the data. In short, tf-idf is frequency of a word within a document weighted down by the frequency across the entire collection, or corpus, of documents, thus marginalizng stopwords and other uninformative words. </p>
+                <p> Because there is a lot of overlap of features  across different posts, it is import to extract more useful information from description data. To derive some meaning from the <b>content</b> of descriptions, I extracted term frequency–inverse document frequency (tf-idf) from the data. In short, tf-idf is frequency of a word within a document weighed down by the frequency across the entire collection, or corpus, of documents, thus marginalizng stopwords and other uninformative words that are not unique to individual description. </p>
                 <br>
                 <ol>
                     <li>tf(x) = (number of times the term x appears in a document) / (total number of words in a documet)</li>
@@ -116,16 +116,15 @@
                 <br>
                 <h4>Model and Evaluation</h4>
                 <br>
-                <p>I tried fitting different types of models- decision tree, support vector machine, random forest, gradient boosted regression tree, artificial neural networks, adaboost, and eXtreme gradient boosting. Among them, 4 of them performed quite well. All results were validated using K-Fold cross validation with 5 folds. </p>
+                <p>I tried fitting different types of models- decision tree, support vector machine, random forest, gradient boosted regression tree, artificial neural networks, AdaBoost, and eXtreme gradient boosting. Among them, 3 of them performed quite well. All results were validated using K-Fold cross validation with 5 folds. </p>
                 <br>
                 <ul>
                     <li><b>Random Forest Classifier (mean accuracy of 0.850):</b> 100 tree estimators, no depth, and 13 input features.</li> 
                     <li><b>Gradient Boositng with Decision Tree Regressor (mean accuracy of 0.856):</b> 150 boosting estimators, learning rate of 0.1, maximum depth of 10, and 0.8 subsampling</li> 
-                    <li><b>AdaBoost (mean accuracy of 0.837):</b> random forest as a base estimator, maximum depth of 5, learning rate of 0.1, and 0.8 subsampling</li> 
-                    <li><b>XGBoost (mean accuracy of 0.837):</b> learning rate of 0.1, 300 boosting rounds, 0.8 subsamping, multi:softmax as objective</li>
+                    <li><b>XGBoost (mean accuracy of  0.860):</b> learning rate of 0.1, 300 boosting rounds, 0.8 subsamping, multi:softmax as objective</li>
                 </ul>
                 <br>
-                <p>Among these, XGBoost turned out to be the best choice overall. Not only did it, though by a very small amount, outperform the other 3, it was quite practical in terms of run-time. Gradient boosting and AdaBoost took 20~30 minutes for each round of training, taking close to 2 hours for 5 fold validation. Random forest and XGBoost, on the other hand, were much more manageable. Below is the detailed performance result. </p>
+                <p>Among these, XGBoost turned out to be the best choice overall. Not only did it, though by a very small amount, outperform the other 2, it was quite practical in terms of run-time. Gradient boosting took ~ 25 minutes for each round of training, taking close to 2 hours for 5 fold validation. Random forest and XGBoost, on the other hand, were much more manageable. Below is the detailed performance result. </p>
                 <br>
                 <table class="table table-striped">
                     <thead class="thead-default">
