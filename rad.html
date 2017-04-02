@@ -63,13 +63,13 @@
                 <br>
 				<p>
                     Rotten Apple Detector, aka RAD, is a tool that my team developed for Criteo's internal hackathon 
-                    held across 20 offices all over the world. The goal of the project is to filter products with inappropriate
-                    descriptions or images in clients' feed using word match and image recognition. I worked on the business analysis and 
-                    image detection model, while two other teammates deployed a solution for keyword match in Japanese and Chinese. 
+                    held across 20 offices globally. The goal of the project was to develop a tool to filter products with inappropriate
+                    descriptions or images in clients' feed using word match and image recognition. I worked on business analysis and 
+                    image detection model, while other teammates deployed a solution for keyword match in Japanese and Chinese. 
                     The team won the 2nd place in APAC region. 
                 </p>
                 <p>
-                    I deployed a machine learning model with deep-learned features, using TensorFlow's 
+                    For the final model, I deployed a machine learning model with deep-learned features, using TensorFlow's 
                     Inception V3 (CNN architecture) and XGBoost.
                 </p>
                 <br>
@@ -110,9 +110,9 @@
                 <br>
                 <p>
                     The biggest limitation of building an image recognition model was availability of data. Of course, as a company
-                    whose engine is driven by big data and machine learning, Criteo has a very robust data infrastructure. However,
-                    as an analyst of a regional office (Tokyo), I did not have access to the company's image database. Thus,
-                    instead of working on a complete product that can be deployed right away, I built a model with samples of 
+                    whose engine is driven by big data and machine learning, Criteo has a very rich data infrastructure. However,
+                    as an analyst of a regional office (Tokyo), I did not have an access to the company's image database. Thus,
+                    instead of working on a complete product that can be distributed right away, I built a model with samples of 
                     'bad' categories to pitch a proof of concept. 
                 </p>
                 <p> The three categories are: </p>
@@ -145,9 +145,9 @@
                     I used a Convolutional Neural Network (CNN) as a main algorithm to idenitfy image features. 
                     Specifically, I applied transfer learning, which is a method of preserving the 
                     architecture of a pre-trained model but re-training it on a new dataset with desired classes. The key assumption
-                    that comes with transfer learning is that features useful identifying one class can be useful for 
+                    that comes with transfer learning is that features useful in identifying one class can be useful for 
                     characterizing other classes as well. For eaxmple, if a model is trained to distinguish angular objects from round ones, 
-                    a feature answering the question of 'Does the object have a straight edge?' is useful for training a facial 
+                    a feature answering a question of 'Does the object have a straight edge?' is useful for training a facial 
                     recognition model, for human faces generally have oval shapes.
                 </p>
                 <p>
@@ -156,7 +156,7 @@
                     given the following conditions: 
                 </p>
                 <ul>
-                    <li> Because I could not access Criteo's data infrastructure, the model would have to be redesigned and retrained with a 
+                    <li>Because I could not access Criteo's data infrastructure, the model would have to be redesigned and retrained with a 
                         refined dataset for real production anyway.</li>
                     <li> Even with a perfect training dataset, my laptop alone might not be able to handle a complete training without GPU</li>
                     <li>I had 48 hours for this Hackahton.</li>
@@ -169,7 +169,7 @@
                     which essentially represents 2048 features of an image. Therefore, to extract high-level features of
                     my training data (good products, nudity, gun, and knife images), I took the output of this feature vector from 
                     Inception V3 Model. Then, instead of using the original final layer, I added a layer of XGBoost modeling, 
-                    which used 2048 deep-learned numeric features and labels of the new training data
+                    in which I applied PCA on 2048 deep-learned numeric features and used 100 reduced features 
                     to fit an XGBoost model.
                 </p>
                 <br>
