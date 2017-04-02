@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="assets/ico/favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+
+    <title>Jaeyoon Jung - Rotten Apple Detector (RAD)</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="assets/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="assets/css/font-awesome.min.css" rel="stylesheet">
+
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html">Jaeyoon Jung</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="index.html#works">Works</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+
+	<div id="workwrap">
+	    <div class="container">
+			<div class="row">
+				<div class="col-lg-12 col-lg-offset-0">
+					<h1>RAD Image Recognition</h1>
+					<h4>Deep learning model that detects inappropriate images</h4>
+				</div>
+			</div>
+	    </div> 
+	</div>
+
+	<section id="summary"></section>
+	<div class="container">
+		<div class="row text-left mt">
+			<div class="col-lg-8 col-lg-offset-2" style = "font-family: 'Josefin Sans', sans-serif">
+				<h2>ABOUT THE PROJECT</h2>
+                <br>
+				<p>
+                    Rotten Apple Detector, aka RAD, is a tool that my team developed for Criteo's internal hackathon 
+                    held across 20 offices all over the world. The goal of the project is to filter products with inappropriate
+                    descriptions or images in clients' feed using word match and image recognition. I worked on the business analysis and 
+                    image detection model, while two other teammates deployed a solution for keyword match in Japanese and Chinese. 
+                    The team won the 2nd place in APAC region. 
+                </p>
+                <p>
+                    I deployed a machine learning model with deep-learned features, using TensorFlow's 
+                    Inception V3 (CNN architecture) and XGBoost.
+                </p>
+                <br>
+                <h4>Rationale</h4>
+                <br>
+                <p>
+                    When advertisers include products with inappropriate descriptions or images in their feed, they end up getting 
+                    blacklisted by publishers. Blacklisting incidents damage these advertisers' performance and Criteo's relationship 
+                    with other publishers, eventually costing the company a large amount of revenue. The analysis of publisher 
+                    share of voice and advertiser revenue estimates that Criteo can gain a potential revenue uplift of 4.5% and 6.3% 
+                    in Japan and China respectively, if it can resolve all blacklisting issues.
+                </p>
+                <p>    
+                    Currently, responsibilities of keeping bad products out of feed are all on advertisers, 
+                    and there is no comprehensive solution within Criteo's ecosystem to detect one. The objective of this project is to 
+                    develop a solution to blacklisting problems through automatic detection of bad (inappropriate) keywords and images.
+                </p>
+                <br>
+                <h4>RAD Solution</h4>
+                <br>
+                <p>
+                    My team's solution, Rotten Apple Detector, is a 2-part solution.
+                </p>
+                <ol>
+                    <li>Enhanced Exact Match: Criteo does have an internal method of detecting products that contain 
+                        exact match of bad keywords. However, it does not work for Japanese and Chinese because they do not 
+                        have spaces. We used natural language processing to better tokenize words in languages without spaces.</li>
+                    <li>Image Recognition: there is no tool to detect in appropriate images during feed integration. Our solution was to
+                        build a deep learning model that can recognize inappropriate images. </li>
+                </ol>
+                <p>My responsibilities within the team were</p>
+                <ol>
+                    <li>Evaluation of Business Value</li>
+                    <li>Development of the second part of RAD solution; image recognition model</li>
+                </ol>
+                <br>
+                <h4>Data</h4>
+                <br>
+                <p>
+                    The biggest limitation of building an image recognition model was availability of data. Of course, as a company
+                    whose engine is driven by big data and machine learning, Criteo has a very robust data infrastructure. However,
+                    as an analyst of a regional office (Tokyo), I did not have access to the company's image database. Thus,
+                    instead of working on a complete product that can be deployed right away, I built a model with samples of 
+                    'bad' categories to pitch a proof of concept. 
+                </p>
+                <p> The three categories are: </p>
+                <uo>
+                    <li>Gun: many publishers do not allow display of weapons </li>
+                    <li>Knife: same as above </li>
+                    <li>Nudity: Criteo as a whole does not allow any sexual contents. In this context, 
+                        I defined nudity as very revealing images in general, not strict nudity. </li>
+                </uo>
+                <p>Then, the model was trained to classify images into 4 categories: Good Product, Gun, Knife, and Nudity. 
+                    Data for bad categories were collected by batch-downloading 400 images per class from Google. 
+                    For good products, I downloaded 400 images from Criteo's internal platform, to include a variety of products.
+                </p>
+                <br>
+                <h4>Methodology / Model Architecture</h4>
+                <br>
+                <p>
+                    <b>TL;DR</b>- Transfer learning on a pre-trained Convolutional Neural Network model (Inception V3 Architecture), 
+                    with a final layer of fitting an XGBoost model on output features.
+                </p>
+                <br>
+                <p>
+                    For theoretircal understanding of CNN architecture, Stanford's reading materials on 
+                    <a href="http://cs231n.github.io/convolutional-networks/">CS231n: Convolutional Neural Networks for Visual Recognition</a> were
+                    immensely helpful. For implementation, I used <a href="https://www.tensorflow.org/">TensorFlow</a>.
+                </p>
+                <br>
+                <p> 
+                    To build an image recognition model that can be trained on dataset with 'inappropriate' products, 
+                    I used a Convolutional Neural Network (CNN) as a main algorithm to idenitfy image features. 
+                    Specifically, I applied transfer learning, which is a method of preserving the 
+                    architecture of a pre-trained model but re-training it on a new dataset with desired classes. The key assumption
+                    that comes with transfer learning is that features useful identifying one class can be useful for 
+                    characterizing other classes as well. For eaxmple, if a model is trained to distinguish angular objects from round ones, 
+                    a feature answering the question of 'Does the object have a straight edge?' is useful for training a facial 
+                    recognition model, for human faces generally have oval shapes.
+                </p>
+                <p>
+                    Although transfer learning is not as accurate as fully training a new CNN architecture, 
+                    it is generally known to achieve very good accuracy. This method was also appropriate for this Hackathon, 
+                    given the following conditions: 
+                </p>
+                <ul>
+                    <li> Because I could not access Criteo's data infrastructure, the model would have to be redesigned and retrained with a 
+                        refined dataset for real production anyway.</li>
+                    <li> Even with a perfect training dataset, my laptop alone might not be able to handle a complete training without GPU</li>
+                    <li>I had 48 hours for this Hackahton.</li>
+                    <li>Proof of concept, rather than a fully developed solution, would be sufficient for pitch & demo. </li>
+                </ul>
+                <p>
+                    The base model I chose was Inception V3 model. It is a type of CNN model that was trained on Imagenet dataset, 
+                    a standard academic dataset with 1000 classes commonly used for training an image recognition model. 
+                    In the original model, the layer right before the final classification layer returns a 2048 dimensional vector (in float), 
+                    which essentially represents 2048 features of an image. Therefore, to extract high-level features of
+                    my training data (good products, nudity, gun, and knife images), I took the output of this feature vector from 
+                    Inception V3 Model. Then, instead of using the original final layer, I added a layer of XGBoost modeling, 
+                    which used 2048 deep-learned numeric features and labels of the new training data
+                    to fit an XGBoost model.
+                </p>
+                <br>
+
+                <h4>Result</h4>
+                <br>
+                <p> When validated with K-Fold cross validation with 5 folds (20% split for test data), 
+                    the model achieved accuracy of approximately 95.5%. Below is a confusion matrix of the 5-fold validation: 
+                </p>
+                <center>
+                    <img class="img-responsive" src="assets/img/portfolio/rad/confusion_matrix.png" width="600" height ="600">
+                </center>
+                <br>
+                <p>
+                    For the demo, I demonstrated the performance of the model using real product images from Criteo's feed. 
+                    Out of 3 good products, 2 knives, 2 nudity, and 2 guns, the model classified 8/9 images correctly. 
+                    Because of constraints on time and data access, I could not create an additional test dataset that strictly consists of 
+                    Criteo's product images.
+                </p>
+                <br>
+                <h4>Image Detection Demo</h4>
+                <br>
+                    <center>
+                        <video width="720" height="400" controls>
+                        <source src="assets/img/portfolio/rad/RAD_Demo.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                        </video>
+                    </center>
+			</div>
+        </div><! --/row -->
+    </div><! --/container -->
+
+	<footer id="footerwrap">
+        <p class="row centered">
+            Copyright 2017 |
+            <a href="mailto:jyjung@princeton.edu">E-mail</a>
+             |
+            <a href="https://www.linkedin.com/in/jaeyoon-jung-757561b5">LinkedIn</a>
+             |
+            <a href="https://github.com/jaeyoon-jung">GitHub</a>
+        </p>
+    </footer>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+  </body>
+</html>
