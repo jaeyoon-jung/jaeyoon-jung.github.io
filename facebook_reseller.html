@@ -12,172 +12,165 @@
     <title>Jaeyoon Jung - Classifying Facebook Resellers</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="assets/css/bootstrap.css" rel="stylesheet">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:100,200,300,400,500,600,700,800,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link href="vendor/devicons/css/devicons.min.css" rel="stylesheet">
+    <link href="vendor/simple-line-icons/css/simple-line-icons.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="assets/css/style.css" rel="stylesheet">
-    <link href="assets/css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/resume.min.css" rel="stylesheet">
 
   </head>
 
   <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+      <a class="navbar-brand js-scroll-trigger" href="index.html#page-top">
+        <span class="d-block d-lg-none">Start Bootstrap</span>
+        <span class="d-none d-lg-block">
+          <img class="img-fluid img-profile rounded-circle mx-auto mb-2" src="img/profile.jpg" alt="">
+        </span>
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="index.html#about">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="index.html#projects">Projects</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
 
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="index.html">Jaeyoon Jung</a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="index.html#works">Works</a></li>
-          </ul>
+    <header class="masthead" style="background-image: url('img/work.jpg')">
+            <div class="container">
+                <div class="row">
+                    <div class="project-header col-lg-12 col-lg-offset-0">
+                        <h1>Facebook Reseller Classfication</h1>
+                        <h4>Machine learning model to classify sellers on Facebook</h4>
+                    </div>
+                </div>
+            </div>
+    </header>
+
+    <section class="p-3 p-lg-5 d-flex flex-column" id="summary">
+      <div class="my-auto" align="center">
+        <div class="resume-item d-flex flex-column flex-md-row mb-5 col-lg-10" style="text-align: left;">
+          <div class="resume-content mr-auto">
+            <h2 class="mb-1">ABOUT THIS PROJECT</h2>
+            <br>
+            <p>In this project, I built a machine learning model that can classify intentions of Facebook sales posts into three categories:</p>
+            <ul>
+                <li><b>No Seller:</b> sellers with no actual intention of selling their products</li>
+                <li><b>Seller:</b> actual sellers with authentic products</li>
+                <li><b>Fake Seller:</b> sellers with counterfeit products</li>
+            </ul>
+            <br>
+            <h3>Data Preprocessing</h3>
+            <br>
+            <h5>Raw Data Field:</h5>
+            <ul>
+                <li><b>description:</b>(str) Description of product(s). Could be empty.</li>
+                <li><b>found_keywords:</b>(int) Keywords associated with the description</li>
+                <li><b>found_keywords_occurrences:</b>(int) Number of keywords that the description contains.</li>
+                <li><b>nb_like:</b>(int) Number of likes that a post recieved.</li>
+                <li><b>nb_share:</b>(int) Number of times a post got shared.</li>
+                <li><b>owner_type:</b>(str) User or Page.</li>
+                <li><b>pictures_url:</b>(str) Link to pictures of listed products. Could be more than one or none.</li>
+                <li><b>picture_labels:</b>(str) Labels assocaited with each picture listed. Could be more than one or none.</li>
+                <li><b>INDEX New:</b>(str) This is the test variable that the model has to predict.</li>
+                <li><b>profile_picture:</b>(str) Link to profile picture of the author of a post.</li>
+                <li><b>published_at:</b>(str) Either date or date with exact time when a post is written.</li>
+            </ul>
+            <br>
+            <br>
+            <p>Because the raw data itself does not provide much insight in its original format, I extracted some meta features that can better capture some characteristics, especially those concerning description text. </p>
+            <h5>Meta Features Added:</h5>
+            <ul>
+                <li><b>published_hour:</b> (int) At what time of the day was a post created? If publshed_at does not have time, impute it with the most frequent value. </li>
+                <li><b>description_length:</b> (int) Word count of description. 0 if NaN</li>
+                <li><b>picture_label_occurences:</b>(int) How many picture labels does a post have? 0 if NaN</li>
+                <li><b>hashtags:</b> (int) How many hashtags does a post have?</li>
+                <li><b>punctuations:</b> (int) How many exclamations mark does the post have?</li>
+                <li><b>has_contact:</b> (int) Did the author of a post mention any personal contact? 1 if true, 0 otherwise.</li>
+                <li><b>uppercase_count:</b> (int) How many uppercase characters are in description?</li>
+                <li><b>uppercase_ratio:</b> (float) Ratio between uppercase_count and character count of description</li>
+                <li><b>has_pic_url:</b> (int) Does the post have a picture_url? 1 if true, 0 otherwise.</li>
+            </ul>
+            <br>
+            <h5>Natural Language Processing</h5>
+            <br>
+            <p> Because there is a lot of overlap of features  across different posts, it is import to extract more useful information from description data. To derive some meaning from the <b>content</b> of descriptions, I extracted term frequency–inverse document frequency (tf-idf) from the data. In short, tf-idf is frequency of a word within a document weighed down by the frequency across the entire collection, or corpus, of documents, thus marginalizng stopwords and other uninformative words that are not unique to individual description. </p>
+            <br>
+            <ol>
+                <li>tf(x) = (number of times the term x appears in a document) / (total number of words in a documet)</li>
+                <li>ifd(x) = log_e( (total number of documents) / (number of documents that contain the term x))</li>
+                <li>tf-idf(x) = tf(x) * idf(x)</li>
+            </ol>
+            <br>
+            <p>This, however, results in a giant sparse matrix with ~343080 columns (when using 80% of data as a training set). To prevent overfitting, I reduced the dimensionality of this matrix to 150 most informative features, by applying reduced rank approximation to it. During this process, also known as latent semantic anaysis (LSA), I used 150 largest eigenvalues from singular value decompositon (SVD) to represent the same amount of information using less dimension. When combined with above meta features, LSA greatly improved peformance of my models. </p>
+            <br>
+            <p>Finally, data is ready for training. The final training set has 164 features. </p>
+            <br>
+            <h3>Model and Evaluation</h3>
+            <br>
+            <p>I tried fitting different types of models- decision tree, support vector machine, random forest, gradient boosted regression tree, artificial neural networks, AdaBoost, and eXtreme gradient boosting. Among them, 3 of them performed quite well. All results were validated using K-Fold cross validation with 5 folds. </p>
+            <br>
+            <ul>
+                <li><b>Random Forest Classifier (mean accuracy of 0.850):</b> 100 tree estimators, no depth, and 13 input features.</li>
+                <li><b>Gradient Boositng with Decision Tree Regressor (mean accuracy of 0.856):</b> 150 boosting estimators, learning rate of 0.1, maximum depth of 10, and 0.8 subsampling</li>
+                <li><b>XGBoost (mean accuracy of  0.860):</b> learning rate of 0.1, 300 boosting rounds, 0.8 subsamping, multi:softmax as objective</li>
+            </ul>
+            <br>
+            <p>Among these, XGBoost turned out to be the best choice overall. Not only did it, though by a very small amount, outperform the other 2, it was quite practical in terms of run-time. Gradient boosting took ~ 25 minutes for each round of training, taking close to 2 hours for 5 fold validation. Random forest and XGBoost, on the other hand, were much more manageable. Below is the detailed performance result. </p>
+            <br>
+            <table class="table table-striped">
+                <thead class="thead-default">
+                    <tr>
+                        <th>Target Label</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1 Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Fake Seller</td>
+                        <td>0.87</td>
+                        <td>0.81</td>
+                        <td>0.84</td>
+                    </tr>
+                    <tr>
+                        <td>No Seller</td>
+                        <td>0.87</td>
+                        <td>0.90</td>
+                        <td>0.89</td>
+                    </tr>
+                    <tr>
+                        <td>Reseller</td>
+                        <td>0.83</td>
+                        <td>0.84</td>
+                        <td>0.83</td>
+                    </tr>
+                    <tr>
+                        <td>Avg / Total</td>
+                        <td>0.86</td>
+                        <td>0.86</td>
+                        <td>0.86</td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+          </div>
         </div>
       </div>
-    </div>
-
-
-	<div id="workwrap">
-	    <div class="container">
-			<div class="row">
-				<div class="col-lg-10 col-lg-offset-1">
-					<h1>Facebook Reseller Classfication</h1>
-					<h4>Machine learning model to classify resellers on Facebook</h4>
-				</div>
-			</div>
-	    </div> 
-	</div>
-
-	<section id="summary"></section>
-	<div class="container">
-		<div class="row text-left mt">
-			<div class="col-lg-8 col-lg-offset-2" style = "font-family: 'Josefin Sans', sans-serif">
-				<h2>ABOUT THE PROJECT</h2>
-                <br>
-				<p>In this project, I built a machine learning model that can classify intentions of Facebook sales posts into three categories:</p>
-                <ul>
-                    <li><b>No Seller:</b> sellers with no actual intention of selling their products</li>
-                    <li><b>Seller:</b> actual sellers with authentic products</li>
-                    <li><b>Fake Seller:</b> sellers with counterfeit products</li>
-                </ul>
-                <br>
-                <h4>Data Preprocessing</h4>
-                <br>
-                <h5>Raw Data Field:</h5>
-                <ul>
-                    <li><b>description:</b>(str) Description of product(s). Could be empty.</li>
-                    <li><b>found_keywords:</b>(int) Keywords associated with the description</li>
-                    <li><b>found_keywords_occurrences:</b>(int) Number of keywords that the description contains.</li>
-                    <li><b>nb_like:</b>(int) Number of likes that a post recieved.</li>
-                    <li><b>nb_share:</b>(int) Number of times a post got shared.</li>
-                    <li><b>owner_type:</b>(str) User or Page.</li>
-                    <li><b>pictures_url:</b>(str) Link to pictures of listed products. Could be more than one or none.</li>
-                    <li><b>picture_labels:</b>(str) Labels assocaited with each picture listed. Could be more than one or none.</li>
-                    <li><b>INDEX New:</b>(str) This is the test variable that the model has to predict.</li>
-                    <li><b>profile_picture:</b>(str) Link to profile picture of the author of a post.</li>
-                    <li><b>published_at:</b>(str) Either date or date with exact time when a post is written.</li>
-                </ul>
-                <br>
-                <br>
-                <p>Because the raw data itself does not provide much insight in its original format, I extracted some meta features that can better capture some characteristics, especially those concerning description text. </p>
-                <h5>Meta Features Added:</h5>
-                <ul>
-                    <li><b>published_hour:</b> (int) At what time of the day was a post created? If publshed_at does not have time, impute it with the most frequent value. </li>
-                    <li><b>description_length:</b> (int) Word count of description. 0 if NaN</li>
-                    <li><b>picture_label_occurences:</b>(int) How many picture labels does a post have? 0 if NaN</li>
-                    <li><b>hashtags:</b> (int) How many hashtags does a post have?</li>
-                    <li><b>punctuations:</b> (int) How many exclamations mark does the post have?</li>
-                    <li><b>has_contact:</b> (int) Did the author of a post mention any personal contact? 1 if true, 0 otherwise.</li>
-                    <li><b>uppercase_count:</b> (int) How many uppercase characters are in description?</li>
-                    <li><b>uppercase_ratio:</b> (float) Ratio between uppercase_count and character count of description</li>
-                    <li><b>has_pic_url:</b> (int) Does the post have a picture_url? 1 if true, 0 otherwise.</li>
-                </ul>
-                <br>
-                <h5>Natural Language Processing</h5>
-                <br>
-                <p> Because there is a lot of overlap of features  across different posts, it is import to extract more useful information from description data. To derive some meaning from the <b>content</b> of descriptions, I extracted term frequency–inverse document frequency (tf-idf) from the data. In short, tf-idf is frequency of a word within a document weighed down by the frequency across the entire collection, or corpus, of documents, thus marginalizng stopwords and other uninformative words that are not unique to individual description. </p>
-                <br>
-                <ol>
-                    <li>tf(x) = (number of times the term x appears in a document) / (total number of words in a documet)</li>
-                    <li>ifd(x) = log_e( (total number of documents) / (number of documents that contain the term x))</li>
-                    <li>tf-idf(x) = tf(x) * idf(x)</li>
-                </ol>
-                <br>
-                <p>This, however, results in a giant sparse matrix with ~343080 columns (when using 80% of data as a training set). To prevent overfitting, I reduced the dimensionality of this matrix to 150 most informative features, by applying reduced rank approximation to it. During this process, also known as latent semantic anaysis (LSA), I used 150 largest eigenvalues from singular value decompositon (SVD) to represent the same amount of information using less dimension. When combined with above meta features, LSA greatly improved peformance of my models. </p>
-                <br>
-                <p>Finally, data is ready for training. The final training set has 164 features. </p>
-                <br>
-                <h4>Model and Evaluation</h4>
-                <br>
-                <p>I tried fitting different types of models- decision tree, support vector machine, random forest, gradient boosted regression tree, artificial neural networks, AdaBoost, and eXtreme gradient boosting. Among them, 3 of them performed quite well. All results were validated using K-Fold cross validation with 5 folds. </p>
-                <br>
-                <ul>
-                    <li><b>Random Forest Classifier (mean accuracy of 0.850):</b> 100 tree estimators, no depth, and 13 input features.</li> 
-                    <li><b>Gradient Boositng with Decision Tree Regressor (mean accuracy of 0.856):</b> 150 boosting estimators, learning rate of 0.1, maximum depth of 10, and 0.8 subsampling</li> 
-                    <li><b>XGBoost (mean accuracy of  0.860):</b> learning rate of 0.1, 300 boosting rounds, 0.8 subsamping, multi:softmax as objective</li>
-                </ul>
-                <br>
-                <p>Among these, XGBoost turned out to be the best choice overall. Not only did it, though by a very small amount, outperform the other 2, it was quite practical in terms of run-time. Gradient boosting took ~ 25 minutes for each round of training, taking close to 2 hours for 5 fold validation. Random forest and XGBoost, on the other hand, were much more manageable. Below is the detailed performance result. </p>
-                <br>
-                <table class="table table-striped">
-                    <thead class="thead-default">
-                        <tr>
-                            <th>Target Label</th>
-                            <th>Precision</th>
-                            <th>Recall</th>
-                            <th>F1 Score</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Fake Seller</td>
-                            <td>0.87</td>
-                            <td>0.81</td>
-                            <td>0.84</td>
-                        </tr>
-                        <tr>
-                            <td>No Seller</td>
-                            <td>0.87</td>
-                            <td>0.90</td>
-                            <td>0.89</td>
-                        </tr>
-                        <tr>
-                            <td>Reseller</td>
-                            <td>0.83</td>
-                            <td>0.84</td>
-                            <td>0.83</td>
-                        </tr>
-                        <tr>
-                            <td>Avg / Total</td>
-                            <td>0.86</td>
-                            <td>0.86</td>
-                            <td>0.86</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <br>
-			</div>
-        </div><! --/row -->
-    </div><! --/container -->
-
-	<footer id="footerwrap">
-        <p class="row centered">
-            Copyright 2017 |
-            <a href="mailto:jyjung@princeton.edu">E-mail</a>
-             |
-            <a href="https://www.linkedin.com/in/jaeyoon-jung-757561b5">LinkedIn</a>
-             |
-            <a href="https://github.com/jaeyoon-jung">GitHub</a>
-        </p>
-    </footer>
-
+    </section>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
