@@ -66,10 +66,10 @@
             <h2 class="mb-1">ABOUT THIS PROJECT</h2>
             <br>
             <p>
-                Rotten Apple Detector, aka RAD, is a tool that my team developed for Criteo's internal hackathon
-                held across 20 offices globally. The goal of the project was to develop a tool to filter products with inappropriate
-                descriptions or images in clients' feed using word match and image recognition. I worked on business analysis and
-                image detection model, while other teammates deployed a solution for keyword match in Japanese and Chinese.
+                Rotten Apple Detector, aka RAD, is a product that my team developed for Criteo's internal hackathon
+                held across 20 offices globally. The goal of the project was to create a tool that filters out listings with inappropriate
+                descriptions or images in our clients' feed via keyword search and image recognition. I assessed potential business value of our project and developed
+                an image classifier, while other teammates deployed a solution for keyword match in Japanese and Chinese.
                 The team won the 2nd place in APAC region.
             </p>
             <p>
@@ -81,14 +81,15 @@
             <br>
             <p>
                 When advertisers include products with inappropriate descriptions or images in their feed, they end up getting
-                blacklisted by publishers. Blacklisting incidents damage these advertisers' performance and Criteo's relationship
-                with other publishers, eventually costing the company a large amount of revenue. The analysis of publisher
-                share of voice and advertiser revenue estimates that Criteo can gain a potential revenue uplift of 4.5% and 6.3%
-                in Japan and China respectively, if it can resolve all blacklisting issues.
+                blacklisted by publishers. Blacklisting incidents damage performance of advertisers' campaigns and Criteo's relationship
+                with other publishers, eventually costing the company a large amount of revenue. This is a particularly notable
+                problem in Asia, because regular keyword match algorithms do not work well with syntactic structure of Japanese
+                and Chinese language. The analysis of publisher share of voice and advertiser revenue estimates that Criteo can gain a
+                potential revenue uplift of 4.5% and 6.3% in Japan and China respectively, if it can resolve all blacklisting issues.
             </p>
             <p>
                 Currently, responsibilities of keeping bad products out of feed are all on advertisers,
-                and there is no comprehensive solution within Criteo's ecosystem to detect one. The objective of this project is to
+                and there is no comprehensive solution within Criteo's ecosystem. The objective of this project is to
                 develop a solution to blacklisting problems through automatic detection of bad (inappropriate) keywords and images.
             </p>
             <br>
@@ -101,12 +102,12 @@
               <li>Enhanced Exact Match: Criteo does have an internal method of detecting products that contain
                   exact match of bad keywords. However, it does not work for Japanese and Chinese because they do not
                   have spaces. We used natural language processing to better tokenize words in languages without spaces.</li>
-              <li>Image Recognition: there is no tool to detect in appropriate images during feed integration. Our solution was to
-                build a deep learning model that can recognize inappropriate images. </li>
+              <li>Image Recognition: there is no tool to detect inappropriate images during feed integration. Our solution was to
+                build a deep learning model that can recognize such images. </li>
             </ol>
             <p>My responsibilities within the team were</p>
             <ol>
-              <li>Evaluation of Business Value</li>
+              <li>Assessment of Business Value</li>
               <li>Development of the second part of RAD solution; image recognition model</li>
             </ol>
             <br>
@@ -115,8 +116,8 @@
             <p>
                 The biggest limitation of building an image recognition model was availability of data. Of course, as a company
                 whose engine is driven by big data and machine learning, Criteo has a very rich data infrastructure. However,
-                as an analyst of a regional office (Tokyo), I did not have an access to the company's image database. Thus,
-                instead of working on a complete product that can be distributed right away, I built a model with samples of
+                as an analyst of a regional office (Tokyo), I did not have access to the company's image database. Thus,
+                instead of working on a complete product that can be deployed right away, I built a model with samples of
                 'bad' categories to pitch a proof of concept.
             </p>
             <p> The three categories are: </p>
@@ -129,7 +130,7 @@
             <p>
               Then, the model was trained to classify images into 4 categories: Good Product, Gun, Knife, and Nudity.
               Data for bad categories were collected by batch-downloading 400 images per class from Google.
-              For good products, I downloaded 400 images from Criteo's internal platform, to include a variety of products.
+              For good products, I randomly downloaded 400 images from Criteo's internal platform, to include a variety of products.
             </p>
             <br>
             <h3 class="mb-0">Methodology / Model Architecture</h3>
@@ -157,13 +158,13 @@
             </p>
             <p>
                 Although transfer learning is not as accurate as fully training a new CNN architecture,
-                it is generally known to achieve very good accuracy. This method was also appropriate for this Hackathon,
+                it is generally known to have very good performance. This method was also appropriate for this Hackathon,
                 given the following conditions:
                 </p>
             <ul>
               <li>Because I could not access Criteo's data infrastructure, the model would have to be redesigned and retrained with a
                   refined dataset for real production anyway.</li>
-              <li> Even with a perfect training dataset, my laptop alone might not be able to handle a complete training without GPU</li>
+              <li> Even with a perfect training dataset, my laptop alone cannot handle a complete training without GPU</li>
               <li>I had 48 hours for this Hackahton.</li>
               <li>Proof of concept, rather than a fully developed solution, would be sufficient for pitch & demo. </li>
             </ul>
@@ -173,7 +174,7 @@
                 In the original model, the layer right before the final classification layer returns a 2048 dimensional vector (in float),
                 which essentially represents 2048 features of an image. Therefore, to extract high-level features of
                 my training data (good products, nudity, gun, and knife images), I took the output of this feature vector from
-                Inception V3 Model. Then, instead of using the original final layer, I added a layer of XGBoost modeling,
+                Inception V3 Model. Then, instead of using the original final layer, I added a custom layer,
                 in which I applied PCA on 2048 deep-learned numeric features and used 100 reduced features
                 to fit an XGBoost model.
             </p>
@@ -187,14 +188,15 @@
               <img src="img/rad/confusion_matrix.png" width="600" height ="500"></img>
             </center>
             <br>
+            <br>
+            <h3 class="mb-0">Image Detection Demo</h3>
+            <br>
             <p>
                 For the demo, I demonstrated the performance of the model using real product images from Criteo's feed.
                 Out of 3 good products, 2 knives, 2 nudity, and 2 guns, the model classified 8/9 images correctly.
                 Because of constraints on time and data access, I could not create an additional test dataset that strictly consists of
                 Criteo's product images.
             </p>
-            <br>
-            <h3 class="mb-0">Image Detection Demo</h3>
             <br>
             <center>
               <video width="720" height="400" controls>

@@ -106,7 +106,13 @@
             <br>
             <h5>Natural Language Processing</h5>
             <br>
-            <p> Because there is a lot of overlap of features  across different posts, it is import to extract more useful information from description data. To derive some meaning from the <b>content</b> of descriptions, I extracted term frequency–inverse document frequency (tf-idf) from the data. In short, tf-idf is frequency of a word within a document weighed down by the frequency across the entire collection, or corpus, of documents, thus marginalizng stopwords and other uninformative words that are not unique to individual description. </p>
+            <p> Because there is a lot of overlap of features  across different posts,
+                it is import to extract more useful information from description data.
+                To derive some meaning from the <b>content</b> of descriptions, I extracted term
+                frequency–inverse document frequency (tf-idf) from the data. In short, tf-idf is
+                frequency of a word within a document weighed down by the frequency across the entire collection,
+                or corpus, of documents. Inverse document frequency accounts for stopwords and other
+                uninformative words that are not unique to individual description. </p>
             <br>
             <ol>
                 <li>tf(x) = (number of times the term x appears in a document) / (total number of words in a documet)</li>
@@ -128,7 +134,12 @@
                 <li><b>XGBoost (mean accuracy of  0.860):</b> learning rate of 0.1, 300 boosting rounds, 0.8 subsamping, multi:softmax as objective</li>
             </ul>
             <br>
-            <p>Among these, XGBoost turned out to be the best choice overall. Not only did it, though by a very small amount, outperform the other 2, it was quite practical in terms of run-time. Gradient boosting took ~ 25 minutes for each round of training, taking close to 2 hours for 5 fold validation. Random forest and XGBoost, on the other hand, were much more manageable. Below is the detailed performance result. </p>
+            <p>Among these, XGBoost turned out to be the best choice overall.
+                Not only did it, though by a very small amount,
+                outperform the other 2, it was quite practical in terms of run-time.
+                Gradient boosting took ~ 25 minutes for each round of training,
+                taking close to 2 hours for 5 fold validation. Random forest and XGBoost,
+                 on the other hand, were much more manageable. Below is the detailed performance result. </p>
             <br>
             <table class="table table-striped">
                 <thead class="thead-default">
@@ -167,6 +178,10 @@
                 </tbody>
             </table>
             <br>
+            <p>
+                The recall scores above are computed by treating the result as
+                a binary classification in one vs all problem.  
+            </p>
           </div>
         </div>
       </div>

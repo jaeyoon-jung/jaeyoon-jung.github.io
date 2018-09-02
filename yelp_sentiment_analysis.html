@@ -85,8 +85,35 @@
             <br>
             <h4>Data Preprocessing</h4>
             <p>
-                The entire dataset with 4.1 million reviews is too large for my computer's memory. Hence, I read only the frist 500,000 lines of reviews to train the model. Since the data itself does not have labels 'positive' and 'negative', I assumed that all 1 starred and 5 starred reviews carry negative and positive sentiment, respectively. There are 199,676 positive (5-starred) reviews and 70,146 negative (1-starred) reviews in the first 500,000 lines.
+                The entire dataset with 4.1 million reviews is too large for my computer's memory.
+                Hence, I read only the frist 500,000 lines of reviews to train the model.
+                Since the data itself does not have labels 'positive' and 'negative',
+                I assumed that all 1 starred and 5 starred reviews carry negative and positive sentiment,
+                respectively. There are 199,676 positive (5-starred) reviews and 70,146 negative (1-starred)
+                reviews in the first 500,000 lines.
             </p>
+            <p>
+                The following table shows most popular words (by count) for each class:
+            </p>
+            <br>
+            <table class="table table-striped">
+                <thead class="thead-default">
+                    <tr>
+                        <th></th>
+                        <th>Most Popular Words</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Positive</td>
+                        <td>food, well, place, great, best, it, film, one, phone, good, like, really, love</td>
+                    </tr>
+                    <tr>
+                        <td>Negative</td>
+                        <td>film, it, get, really, place, good, even, food, phone, bad, would, time, one, like</td>
+                    </tr>
+                </tbody>
+            </table>
             <p>
                 Then, these reviews are tokenized after the following formatting:
             </p>
@@ -99,59 +126,123 @@
                 <li>All white space is reduced to one</li>
                 <li>All numbers are stripped</li>
                 <li>English stopwords (list obtained from NLTK module) are stripped</li>
+                <li>All words are lemmatized, using WordNet Lemmatizer </li>
                 <li>All words are reducted to their stemmers, using Porter Stemmer Algorithm </li>
             </ul>
             <p>
                 Then, I also removed words that appear in both classes too frequently, in order to reduce the number of uninformative features. For example, words like food and restaurants appear very frequently in both positive and negative reviews, and they're not helpful in capturing the sentiment of text at all. I identified these common words by taking the inserct of 1000 most frequent words in positive and negative reviews.
             </p>
             <br>
-
+            <h4>Feature Engineering & Selection</h4>
+            <p>
+                Instead of just using frequency of preprocessed tokens, I used engineered a few features
+                that improved classification accuracy.
+            </p>
+            <ul>
+                <li>Bigram: the order of word occurrence could be informative. Bigram is helpful
+                    in recreating this without making features too specific to training data.</li>
+                <li>TF-IDF (term frequency-inverse document frequency):
+                    using TF-IDF values decreases weight on terms that appear
+                    very often across the entire corpus. Terms with high document
+                    frequency are not very informative and function as corpus-specific stop words.</li>
+                <li>Character length & word count: users with strong sentiment may write more than others.</li>
+                <li>Upper case count: users with strong sentiment tend to write
+                    reviews in upper case to make them dramatic.</li>
+            </ul>
+            <p>
+                Using the above feature extraction results in a giant sparse matrix. As a reference, training on
+                2400 reviews results in 3479 columns. To find more meaningful features among 10,000s of features,
+                I tried the following two methodologies:
+            </p>
+            <ul>
+                <li>SVD (Singular Value Decomposition): I decomposed the sparse feature matrix into linear
+                    combination of independent components. The decomposed matrix is sorted by eigenvalue,
+                    which represents variance explained by each eigenvector (component).
+                    By taking first 100 columns, I reduced dimensionality of data to remove some noise.
+                    Because this transformation generates negative values, I could not use it for Nave Bayes classifiers.
+                </li>
+                <li>Chi-Square Feature Selection: I used chi-square feature selection as an alternative of SVD.
+                    This computes chi-square score of independence between features and classes (positive vs negative)
+                    to find 100 best features that are dependent on classes.
+                </li>
+            </ul>
             <br>
             <h4>Sentiment Analysis</h4>
             <p>
-                My two best performing models were <b>Unigram Naive Bayes Classifier</b> and <b>Unigram + Bigram NB Classifier.</b>
+                I tried Bernoulli Naive Bayes, Multinomial Bayes, Decision Tree, Random Forest,
+                K Nearest Neighbors, and Support Vector Machine algorithms with different combinations
+                of features and parameters. For rigorous evaluation of models, I performed
+                5-fold cross validation and compared average accuracy and F1 scores to do final evaluation.
+            </p>
+            <p>
+                My two best performing models were <b>Multinomial Naive Bayes Classifier</b> and <b>Support Vector Machine.</b>
+                They both use unigram, bigram, and TF-IDF as features and reduced dimensionality of data by Chi-square score of independece.
             </p>
             <br>
-            <li>
-               <b>Naive Bayes Classifier on Unigram Features</b>: Tokenized words minus stopwords and uninformative, frequent words. Its top 10 informative words are <em>unprofession, uneth, ined, inexcus, unapologet, stunk, unaccept, insinu, rancid, and fece.</em> These are all associated with negative sentiment.
-            </li>
-            <br>
-            <li>
-                <b>Naive Bayes Classifier on Unigram + Bigram Features</b>: On top of unigrams, the model uses 20 significant bigrams in each review as features. The top 10 informative features are <em>(horribl, servic), (busi, elsewher), (file, complaint), (veri, rude), (buyer, bewar), (fals, advertis), (is, joke), (no, apolog), unprofession, and uneth. </em> They are also associated with negative sentiment.
-            </li>
             <br>
             <br>
             <table class="table table-striped">
                 <thead class="thead-default">
                     <tr>
                         <th>Classifier</th>
-                        <th>Accuracy</th>
-                        <th>Pos Precision</th>
-                        <th>Pos Recall</th>
-                        <th>Neg Precision</th>
-                        <th>Neg Recall</th>
+                        <th>Multinomial NB</th>
+                        <th>SVM</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Unigram NB</td>
-                        <td>0.8670</td>
-                        <td>0.9791</td>
-                        <td>0.8381</td>
-                        <td>0.6732</td>
-                        <td>0.9492</td>
+                        <td>Average Accuracy</td>
+                        <td>0.819</td>
+                        <td>0.818</td>
                     </tr>
                     <tr>
                         <td>Unigram + Bigram NB</td>
-                        <td>0.9080</td>
-                        <td>0.9940</td>
-                        <td>0.8810</td>
-                        <td>0.7441</td>
-                        <td>0.9850</td>
+                        <td>0.823</td>
+                        <td>0.819</td>
                     </tr>
                 </tbody>
             </table>
             <br>
+            <p>
+                According to the results of K-Fold cross validation, the two models are very close
+                in accuracy and F1 score. However, SVM has time complexity greater than quadratic,
+                and the fit time grew exponentially as features grew. Hence, Multinomial Nave Bayes
+                is more appropriate for scaling on a much larger dataset.
+            </p>
+            <br>
+            <table class="table table-striped">
+                <thead class="thead-default">
+                    <tr>
+                        <th></th>
+                        <th>Most Informative Features</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Positive</td>
+                        <td>well, excel, food, movi, film</td>
+                    </tr>
+                    <tr>
+                        <td>Negative</td>
+                        <td>miss numer, miss entir, misplac, mislead, mishima extrem</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>
+                I also computed the most informative features for the Multinomial Naive Bayes classifier.
+                It seems that basic root words which are popular across all positive samples seem to be
+                the most informative features for positive samples.
+                However, that is not the case for the negative class. Indeed, the most informative
+                features associated with the negative class are much harder to make sense of at face value.
+                Firstly, they seem to be morphological negations, not root words. Perhaps they are derived
+                from the stemming and lemmatizing steps that occur during preprocessing of the data.
+                In any case, the poor overlap that they have with the most popular words group for the
+                negative class suggests that grammatical analysis of negative samples is more
+                important for their classification than the simple presence of negative buzz words. This makes
+                intuitive sense. When people are happy with something, they tend to express it short and sweet, but
+                if they are dissatisfied, they will explain precisely what they found to be dissatisfactory (requires
+                higher levels of grammatical and semantic parsing).
+            </p>
           </div>
         </div>
       </div>
