@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evals instead of vibes | Jaeyoon Jung</title>
+  <meta name="description" content="How I built eval harnesses for an AI-agent product: evaluate the production code path, score deterministically first, diff against committed baselines, keep evals out of CI, and grow test cases from production failures." />
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --muted: #666;
+      --link: #1a1a1a;
+      --bg: #fff;
+      --border: #e4e0d8;
+      --card: #faf8f4;
+      --max-width: 680px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+      padding: 60px 24px 100px;
+    }
+
+    main {
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .back {
+      display: inline-block;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 48px;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      margin: 56px 0 16px;
+    }
+
+    p { margin-bottom: 20px; }
+
+    ul, ol {
+      margin: 0 0 20px 1.2em;
+    }
+
+    li { margin-bottom: 10px; }
+
+    a {
+      color: var(--link);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    a:hover { opacity: 0.6; }
+
+    strong { font-weight: 650; }
+
+    code {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 0.86em;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 5px;
+      white-space: nowrap;
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 24px 0 28px;
+      font-size: 0.85rem;
+    }
+
+    .stats .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 14px;
+      line-height: 1.4;
+    }
+
+    .stats .stat strong {
+      display: block;
+      font-size: 1.1rem;
+    }
+
+    .stats .stat small {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .footer-links {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 0.95rem;
+    }
+
+    .footer-links a { color: var(--muted); }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text: #e8e8e8;
+        --muted: #888;
+        --link: #e8e8e8;
+        --bg: #111;
+        --border: #2c2c2c;
+        --card: #1a1a1a;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="../">← Juno case study</a>
+
+    <h1>Evals instead of vibes</h1>
+    <p class="subtitle">The quality infrastructure behind a solo-built AI agent product — five design decisions I'd defend hardest, and the one judgment call no eval suite written in advance could capture.</p>
+    <p class="meta">2026 · Part of the <a href="../">Juno</a> series</p>
+
+    <p>
+      <a href="../">Juno</a> is an AI wedding-planning studio with two LLM surfaces: an ingestion
+      pipeline that turns vendor email and documents into structured, reviewable changes, and June —
+      an agent that reads the whole workspace, answers questions, drafts outreach, and proposes
+      changes. An agent product lives or dies on quality you can't see in a demo: does the pipeline
+      catch the payment schedule buried in an email? Does June answer from the workspace's actual
+      data, or does she make something up?
+    </p>
+    <p>
+      Early on I was judging prompt changes by re-running a few scenarios and eyeballing the output —
+      which stops working the moment you have more than a handful of behaviors to protect. So both
+      surfaces got eval harnesses, and the design decisions behind them are some of the ones I'd
+      defend hardest in any review.
+    </p>
+
+    <div class="stats">
+      <span class="stat"><strong>22</strong><small>golden fixtures, ingestion harness</small></span>
+      <span class="stat"><strong>21</strong><small>scenario fixtures across 7 suites, agent harness</small></span>
+      <span class="stat"><strong>36</strong><small>e2e tests across 6 spec files, in CI — not evals</small></span>
+    </div>
+
+    <h2>1. Evaluate the production code path, not a copy of it</h2>
+    <p>
+      The harnesses run the real extraction and reconcile functions, and the real agent loop — with
+      database-backed tools swapped for fixture-backed ones that serve identical schemas from a
+      shared workspace snapshot. The tradeoff is more plumbing up front. The alternative — a
+      simplified "eval version" of the pipeline — silently drifts from what production actually
+      does, and then your scores measure nothing. When a metric moves in this setup, it moved
+      because the production behavior moved.
+    </p>
+
+    <h2>2. Deterministic scoring first; an LLM judge only where determinism fails</h2>
+    <p>
+      Most of what matters is checkable in plain code: did the right entities come out, with the
+      right key fields, the right statuses, the right tool calls made — and the forbidden ones
+      <em>not</em> made. An LLM judge is reserved for the genuinely fuzzy residue: is "Confirm final
+      headcount with caterer" the same task as "caterer needs guest count"? Is an answer actually
+      supported by what the tools returned?
+    </p>
+    <p>
+      Judges are convenient, so the temptation is to let one grade everything — but a judge is
+      itself a model that drifts and has blind spots. Keeping its scope narrow keeps the scores
+      auditable: when a metric moves, I can almost always point to the exact deterministic check
+      that moved it.
+    </p>
+
+    <h2>3. A committed baseline instead of pass/fail thresholds</h2>
+    <p>
+      Absolute thresholds ("extraction accuracy must exceed 90%") invite gaming and hide slow decay.
+      Instead, every eval run diffs against a baseline file checked into the repo, and updating that
+      baseline is an explicit, reviewable commit. A prompt change that trades recall on contracts
+      for precision on tasks shows up as exactly that — a diff a reviewer can reason about, not a
+      green checkmark.
+    </p>
+
+    <h2>4. Evals are not CI</h2>
+    <p>
+      Eval runs call the real model APIs: they cost money and are nondeterministic, which makes them
+      terrible PR gates. So the two systems are deliberately separate. CI exercises every
+      user-facing flow end-to-end — 36 Playwright tests across 6 spec files, against real auth and
+      row-level security, with deterministic mock model responses. CI answers "does the machinery
+      work?" Evals run on demand with repeat trials to average out variance, and answer "is the
+      model's judgment good?" Conflating the two gets you flaky CI and eval suites nobody runs.
+    </p>
+
+    <h2>5. Test cases come from production failures — carefully</h2>
+    <p>
+      When June gets something wrong, I flag the run in the UI, which snapshots everything the
+      failing run saw: the conversation, and the workspace state <em>at that moment</em>, so the
+      case still reproduces after the live data moves on. Two guardrails I added after thinking
+      about how this could go wrong:
+    </p>
+    <ul>
+      <li>
+        <strong>The flagged output never becomes the expected answer.</strong> It's preserved as
+        reference, but a human writes what <em>should</em> have happened. Otherwise the suite would
+        enshrine the exact failure it was meant to catch.
+      </li>
+      <li>
+        <strong>Every case passes through human review and redaction before promotion.</strong>
+        Production data contains real names, real vendors, and real money.
+      </li>
+    </ul>
+
+    <h2>The case that made the flag loop essential</h2>
+    <p>
+      I expected the hard eval problems to be extractive — dates, amounts, payment schedules. They
+      weren't. The hardest judgment June has to make is <strong>editorial</strong>: of the hundred
+      small facts flowing through vendor threads, which ones are <em>decisions worth logging</em>
+      and making visible to the couple? "We're going with the family-style menu" clearly is.
+      "The florist prefers Tuesday deliveries" clearly isn't. Most of real life sits in between.
+    </p>
+    <p>
+      I tried to write that boundary down ahead of time and couldn't — and an eval suite authored in
+      a vacuum just encodes the author's guess. What actually works is running the product on my own
+      wedding and letting the disagreements become data: every time June logs noise or misses a real
+      decision, the flag pipeline turns that moment into a fixture with a human-written expected
+      answer. The eval suite isn't a spec I wrote once; it's an accumulating record of every place
+      my judgment and the model's diverged. For an agent product, I've come to think that's what an
+      eval suite <em>is</em>.
+    </p>
+
+    <div class="footer-links">
+      <a href="../">Juno case study</a>
+      <a href="../building/">Building Juno with AI coding agents</a>
+      <a href="https://getjuno.tech/" target="_blank" rel="noopener">Try Juno</a>
+      <a href="/">About me</a>
+      <a href="mailto:jaeyoonjung95@gmail.com">Email</a>
+    </div>
+  </main>
+</body>
+</html>

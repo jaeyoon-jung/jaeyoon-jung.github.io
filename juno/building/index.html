@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Building Juno solo, in a month, with AI coding agents | Jaeyoon Jung</title>
+  <meta name="description" content="The spec-driven workflow behind Juno: how I shipped a production AI-agent product solo in about a month with Claude Code and Codex — what worked, where the workflow broke down, and why CI was the game changer." />
+  <style>
+    :root {
+      --text: #1a1a1a;
+      --muted: #666;
+      --link: #1a1a1a;
+      --bg: #fff;
+      --border: #e4e0d8;
+      --card: #faf8f4;
+      --max-width: 680px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+      padding: 60px 24px 100px;
+    }
+
+    main {
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .back {
+      display: inline-block;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 48px;
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      margin: 56px 0 16px;
+    }
+
+    p { margin-bottom: 20px; }
+
+    ul, ol {
+      margin: 0 0 20px 1.2em;
+    }
+
+    li { margin-bottom: 10px; }
+
+    a {
+      color: var(--link);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    a:hover { opacity: 0.6; }
+
+    strong { font-weight: 650; }
+
+    code {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 0.86em;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 5px;
+      white-space: nowrap;
+    }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin: 24px 0 28px;
+      font-size: 0.85rem;
+    }
+
+    .flow .step {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 12px;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    .flow .arrow {
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .footer-links {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 0.95rem;
+    }
+
+    .footer-links a { color: var(--muted); }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --text: #e8e8e8;
+        --muted: #888;
+        --link: #e8e8e8;
+        --bg: #111;
+        --border: #2c2c2c;
+        --card: #1a1a1a;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="../">← Juno case study</a>
+
+    <h1>Building Juno solo, in a month, with AI coding agents</h1>
+    <p class="subtitle">The spec-driven workflow that let one person ship a production agent product — what worked, where it broke down, and why CI turned out to be the real game changer.</p>
+    <p class="meta">2026 · Part of the <a href="../">Juno</a> series</p>
+
+    <p>
+      <a href="../">Juno</a> — an AI wedding-planning studio with a full workspace, an email
+      ingestion pipeline, and an agent with her own inbox — was built by one person in about a
+      month, alongside planning the actual wedding it's used for. That was only possible because
+      the build itself was AI-native: most of the code was written by AI coding agents, and my job
+      looked a lot more like product management than typing — writing specs, defining invariants,
+      reviewing diffs, and maintaining the context that keeps agent work coherent.
+    </p>
+
+    <h2>The workflow</h2>
+    <p>
+      Every feature runs through the same pipeline, using both Claude Code and Codex:
+    </p>
+    <div class="flow">
+      <span class="step">Roadmap feature</span>
+      <span class="arrow">→</span>
+      <span class="step">Written spec</span>
+      <span class="arrow">→</span>
+      <span class="step">Implementation plan</span>
+      <span class="arrow">→</span>
+      <span class="step">Task list</span>
+      <span class="arrow">→</span>
+      <span class="step">Implementation</span>
+    </div>
+    <p>
+      The connective tissue is an <strong>agents-facing architecture document</strong>: a living
+      file that records the repo's conventions, invariants, and design decisions — which mutations
+      exist, what the agent is and isn't allowed to touch, how timezones are stored, what the
+      review-queue state machine allows. Every coding session starts grounded in it, which is what
+      keeps session #40 consistent with session #3. Maintaining that document is the highest-leverage
+      writing I did on the project: it's the difference between an agent that extends your
+      architecture and one that reinvents it slightly wrong each time.
+    </p>
+
+    <h2>Where the workflow broke down</h2>
+    <p>
+      The pipeline's failure mode wasn't quality — it was <strong>ceremony</strong>. My initial
+      definition of a "roadmap feature" was too loose, so the workflow would take a small change and
+      dutifully inflate it into a full spec, implementation plan, and task list. The output quality
+      was genuinely good; the token bill was not. A one-hour tweak would burn the process overhead
+      of a one-week feature.
+    </p>
+    <p>
+      The fix was tuning the entry criteria: deciding what deserves the full spec-driven treatment
+      and what should just be a direct, lightweight edit. That judgment — matching process weight to
+      change size — turns out to be the same skill as running a human team, where making everyone
+      write a PRD for a copy change kills velocity. Agent teams don't push back on ceremony the way
+      humans do; they'll happily generate all of it. The discipline has to come from you.
+    </p>
+
+    <h2>CI was the game changer</h2>
+    <p>
+      The single highest-impact investment was boring: continuous integration. Every PR runs four
+      quality gates — lint, typecheck, unit tests, production build — plus a 36-test Playwright e2e
+      suite across 6 spec files, running against real auth and row-level security with deterministic
+      mock model responses. Once that wall existed, bugs largely stopped reaching <code>main</code>.
+    </p>
+    <p>
+      This matters more with agent-written code, not less. Agents produce plausible code fast, and
+      review attention is the scarce resource — so the machine has to catch the mechanical failures
+      before a human ever looks. CI is what converts "an agent wrote a lot of code quickly" from a
+      liability into velocity. (Model-quality regressions are a different failure class with a
+      different harness — that's the <a href="../evals/">evals article</a>.)
+    </p>
+
+    <h2>Invariants as code, not vigilance</h2>
+    <p>
+      With agents doing most of the writing, anything you're not willing to re-review on every diff
+      has to be enforced mechanically:
+    </p>
+    <ul>
+      <li>
+        <strong>One mutation surface.</strong> The workspace has 70 server actions (Zod-validated,
+        audit-logged); 57 of them are also registered as agent tools with schemas derived from the
+        same Zod definitions. There's no separate "agent API" to drift out of sync — and the gap of
+        13 is deliberate: sends, uploads, invites, and review-queue approvals are user-only.
+      </li>
+      <li>
+        <strong>The allowlist is pinned by a unit test.</strong> June must never gain send-email or
+        payment authority, so that boundary isn't a convention in a doc — it's a test that fails if
+        a refactor (human or agent) ever changes the tool registry. Guardrails you'd normally
+        enforce through code review become code themselves.
+      </li>
+    </ul>
+
+    <h2>What this taught me</h2>
+    <p>
+      A month of this settled a question I had about what happens to product work when agents write
+      the code: the PM skillset doesn't get automated away — it becomes the bottleneck skill.
+      Everything that made the agents effective was product work: a crisp spec, an explicit
+      invariant, a well-maintained architecture doc, a decision about how much process a change
+      deserves. Everything that went wrong traced back to a place where I'd been vague. Building
+      with agent teams is a compressed, high-feedback version of the job I already had — you find
+      out within hours, not quarters, whether your spec was actually clear.
+    </p>
+
+    <div class="footer-links">
+      <a href="../">Juno case study</a>
+      <a href="../evals/">Evals instead of vibes</a>
+      <a href="https://getjuno.tech/" target="_blank" rel="noopener">Try Juno</a>
+      <a href="/">About me</a>
+      <a href="mailto:jaeyoonjung95@gmail.com">Email</a>
+    </div>
+  </main>
+</body>
+</html>
