@@ -4,162 +4,186 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Jaeyoon Jung</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --text: #1a1a1a;
-      --muted: #666;
-      --link: #1a1a1a;
-      --bg: #fff;
-      --max-width: 620px;
+      --bg: #FBF7F0;
+      --ink: #241E17;
+      --clay: #B4552D;
+      --muted: #8a7d6b;
+      --body-muted: #5c5347;
+      --border: #E5DCCB;
+      --serif: 'Instrument Serif', Georgia, serif;
+      --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      font-size: 17px;
-      line-height: 1.7;
-      color: var(--text);
       background: var(--bg);
-      padding: 60px 24px 100px;
+      color: var(--ink);
     }
-
-    main {
-      max-width: var(--max-width);
-      margin: 0 auto;
-    }
-
-    h1 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      margin-bottom: 6px;
-      letter-spacing: -0.3px;
-    }
-
-    .tagline {
-      color: var(--muted);
-      font-size: 0.95rem;
-      margin-bottom: 40px;
-    }
-
-    p {
-      margin-bottom: 20px;
-    }
-
-    a {
-      color: var(--link);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-    }
-
-    a:hover {
-      opacity: 0.6;
-    }
-
-    .section {
-      margin-top: 48px;
-    }
-
-    .section-label {
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
-
-    .writing-item {
-      margin-bottom: 18px;
-    }
-
-    .writing-item .desc {
-      display: block;
-      color: var(--muted);
-      font-size: 0.9rem;
-      line-height: 1.55;
-    }
-
-    .links {
-      margin-top: 56px;
-      display: flex;
-      gap: 20px;
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
-
-    .links a {
-      color: var(--muted);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --text: #e8e8e8;
-        --muted: #888;
-        --link: #e8e8e8;
-        --bg: #111;
-      }
+    a { color: var(--clay); text-decoration: none; }
+    a:hover { opacity: 0.75; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 26px 48px; }
+    .site-name { font-family: var(--serif); font-size: 24px; font-style: italic; color: var(--ink); }
+    .nav-links { display: flex; gap: 28px; font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+    .nav-links a { color: var(--ink); }
+    .nav-links a.accent { color: var(--clay); }
+    .hero { display: flex; align-items: flex-end; gap: 48px; padding: 56px 48px 72px; }
+    .hero-text { flex: 1; }
+    .kicker { font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 20px; }
+    h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(56px, 9vw, 112px); line-height: 0.98; letter-spacing: -0.01em; margin-bottom: 28px; }
+    h1 em { color: var(--clay); }
+    .hero-sub { font-size: 21px; line-height: 1.55; max-width: 520px; }
+    .hero img { width: 320px; height: 400px; object-fit: cover; border-radius: 12px; transition: transform 0.4s ease; }
+    .hero img:hover { transform: translateY(-8px); }
+    .band { background: var(--clay); height: 56px; }
+    section { padding: 72px 48px; border-bottom: 1px solid var(--border); }
+    .label { font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; color: var(--muted); }
+    .about { display: grid; grid-template-columns: 200px 1fr; gap: 48px; }
+    .about-body { font-size: 18px; line-height: 1.7; max-width: 640px; }
+    .about-body p { margin-bottom: 20px; }
+    .about-body p:last-child { margin-bottom: 0; }
+    .about-body a { text-decoration: underline; text-underline-offset: 3px; }
+    .juno-flex { display: flex; gap: 48px; align-items: center; margin-top: 32px; }
+    .juno-text { flex: 1; }
+    h2.feature { font-family: var(--serif); font-weight: 400; font-size: 44px; line-height: 1.1; margin-bottom: 18px; }
+    .juno-text p { font-size: 17px; line-height: 1.65; color: var(--body-muted); }
+    .juno-text p a { text-decoration: underline; text-underline-offset: 3px; }
+    .juno-links { display: flex; flex-direction: column; gap: 10px; font-size: 16px; margin-top: 24px; align-items: flex-start; }
+    .juno-links a.primary { color: var(--ink); border-bottom: 1px solid var(--ink); }
+    .juno-links a.secondary { color: var(--muted); }
+    .juno-shot { flex-shrink: 0; }
+    .juno-shot img { width: 560px; max-width: 100%; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 16px 40px rgba(40,30,15,0.15); transform: rotate(1.5deg); transition: transform 0.4s ease; display: block; }
+    .juno-shot img:hover { transform: rotate(0deg) scale(1.02); }
+    .writing-row { display: grid; grid-template-columns: 1fr 60px; align-items: center; gap: 24px; padding: 28px 0; border-bottom: 1px solid var(--border); color: var(--ink); transition: padding-left 0.25s ease; }
+    .writing-row:hover { padding-left: 12px; opacity: 1; }
+    .writing-row:last-child { border-bottom: none; }
+    .writing-title { display: block; font-family: var(--serif); font-size: 30px; line-height: 1.15; margin-bottom: 8px; }
+    .writing-desc { display: block; font-size: 15px; line-height: 1.55; color: var(--muted); max-width: 720px; }
+    .writing-arrow { font-size: 26px; color: var(--clay); text-align: right; }
+    .ceramics-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 36px; }
+    .ceramics-head em { font-family: var(--serif); font-size: 22px; }
+    .ceramics-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
+    .ceramics-grid img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 12px; transition: transform 0.3s ease; display: block; }
+    .ceramics-grid img:hover { transform: translateY(-10px); }
+    footer { padding: 88px 48px; text-align: center; }
+    footer h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(44px, 6vw, 72px); margin-bottom: 28px; }
+    .email-pill { display: inline-block; background: var(--ink); color: var(--bg); font-size: 16px; padding: 14px 32px; border-radius: 999px; transition: transform 0.2s ease; }
+    .email-pill:hover { transform: scale(1.05); opacity: 1; }
+    .footer-links { display: flex; justify-content: center; gap: 24px; margin-top: 32px; font-size: 14px; }
+    .footer-links a { color: var(--muted); }
+    @media (max-width: 800px) {
+      nav, section, .hero, footer { padding-left: 24px; padding-right: 24px; }
+      .nav-links { gap: 16px; }
+      .hero { flex-direction: column; align-items: flex-start; }
+      .hero img { width: 100%; height: auto; aspect-ratio: 4/5; max-width: 400px; }
+      .about { grid-template-columns: 1fr; gap: 20px; }
+      .juno-flex { flex-direction: column; align-items: flex-start; }
+      .ceramics-grid { grid-template-columns: repeat(3, 1fr); }
+      .ceramics-head { flex-direction: column; gap: 8px; }
+      .writing-title { font-size: 24px; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <h1>Jaeyoon Jung</h1>
-    <div class="tagline">EN / JA / KO</div>
-
-    <p>
-      Hi, I'm Jaeyoon.
-    </p>
-
-    <p>
-      I'm a product manager and data scientist based in Tokyo. I was born in Korea, raised in Japan, and went to university and started my career in the US. Moving across cultures shaped how I think about products, communication, and people.
-    </p>
-
-    <p>
-      I started my career as a data scientist before gradually moving into product management, where I could get closer to customers and real-world problems. That data science foundation still shapes how I work as a PM: it helps me ask better questions, structure ambiguity, and build product intuition from evidence rather than assumptions.
-    </p>
-
-    <p>
-      Previously, I spent six years at <a href="https://flatiron.com/" target="_blank" rel="noopener">Flatiron Health</a> across data science and product management — building real-world oncology data products from unstructured EHR data, running experiments to optimize and forecast data operations, and launching the company's first ex-US data products in Japan, the UK, and Germany. In mid-2025, I left to build my own startup, Conatus AI. After many pivots we landed in the AEO/GEO space (AI search optimization) and reached paying customers at launch. Ultimately I made the call to wind it down in early 2026 — the traction was real, but I couldn't see myself committing the next five years to marketing tech.
-
-    <p>
-      Right now I'm taking my first real break in seven years, and figuring out what's next. AI × health is the obvious fit given my background, but the environment matters more to me than the domain: I'm open to anything, as long as it's an AI-native team where I can move fast and build things with intensity.
-    </p>
-
-    <p>
-      One of my big projects during the break is planning my own wedding — so naturally, I built <a href="https://getjuno.tech/" target="_blank" rel="noopener">Juno</a>, an AI agent for wedding planning, solo in about a month. Give it a shot if you have a wedding coming up — or read about how I built it below.
-    </p>
-
-    <p>
-      Feel free to reach out!
-    </p>
-
-    <div class="section">
-      <div class="section-label">Writing</div>
-      <div class="writing-item">
-        <a href="juno/index.html">Juno: an AI wedding planner you can actually trust</a>
-        <span class="desc">The product case study — the design decisions and trust boundaries behind an AI agent that couples hand real work to, and what running my own wedding on it has taught me.</span>
-      </div>
-      <div class="writing-item">
-        <a href="juno/evals/index.html">Evals instead of vibes</a>
-        <span class="desc">Quality infrastructure for an agent product: evaluate the production code path, score deterministically first, diff against committed baselines, and grow test cases from production failures.</span>
-      </div>
-      <div class="writing-item">
-        <a href="juno/building/index.html">Building Juno solo, in a month, with AI coding agents</a>
-        <span class="desc">The spec-driven workflow behind the build — where it broke down, why CI was the game changer, and what agent teams taught me about product work.</span>
-      </div>
-    </div>
-
-    <div class="links">
+  <nav>
+    <span class="site-name">Jaeyoon Jung</span>
+    <div class="nav-links">
+      <a href="#writing">Writing</a>
       <a href="ceramics/index.html">Ceramics</a>
       <a href="https://linkedin.com/in/jaeyoon-j/" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="mailto:jaeyoonjung95@gmail.com">Email</a>
-      <a href="https://github.com/jaeyoon-jung">GitHub</a>
+      <a class="accent" href="mailto:jaeyoonjung95@gmail.com">Email me</a>
     </div>
-  </main>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-text">
+      <div class="kicker">TECHNICAL PM — DATA &amp; AI · TOKYO & US · EN / JA / KO</div>
+      <h1>Hi, I'm<br><em>Jaeyoon</em>.</h1>
+      <p class="hero-sub">Technical product leader with 7+ years across product management and data science, building analytics-heavy products.</p>
+    </div>
+    <img src="img/portrait.jpeg" alt="Portrait of Jaeyoon" />
+  </header>
+
+  <div class="band"></div>
+
+  <section class="about" id="about">
+    <div class="label">ABOUT</div>
+    <div class="about-body">
+      <p>I'm a product manager and data scientist based in Tokyo. I was born in Korea, raised in Japan, and went to university and started my career in the US. Moving across cultures shaped how I think about products, communication, and people.</p>
+      <p>I started my career as a data scientist before gradually moving into product management, where I could get closer to customers and real-world problems. That data science foundation still shapes how I work as a PM: it helps me ask better questions, structure ambiguity, and build product intuition from evidence rather than assumptions.</p>
+      <p>Previously, I spent six years at <a href="https://flatiron.com/" target="_blank" rel="noopener">Flatiron Health</a> across data science and product management — building real-world oncology data products from unstructured EHR data, running experiments to optimize and forecast data operations, and launching the company's first ex-US data products in Japan, the UK, and Germany. In mid-2025, I left to build my own startup, Conatus AI. After many pivots we landed in the AEO/GEO space (AI search optimization) and reached paying customers at launch. Ultimately I made the call to wind it down in early 2026 — the traction was real, but I couldn't see myself committing the next five years to marketing tech.</p>
+      <p>Right now I'm taking my first real break in seven years, and figuring out what's next. AI × health is the obvious fit given my background, but the environment matters more to me than the domain: I'm open to anything, as long as it's an AI-native team where I can move fast and build things with intensity. I'm relocating to the US soon — see you on the other side!</p>
+    </div>
+  </section>
+
+  <section id="juno">
+    <div class="label">FEATURED PROJECT</div>
+    <div class="juno-flex">
+      <div class="juno-text">
+        <h2 class="feature">Juno: an AI wedding planner you can actually trust</h2>
+        <p>One of my big projects during the break is planning my own wedding — so naturally, I built <a href="https://getjuno.tech/" target="_blank" rel="noopener">Juno</a>, an AI agent for wedding planning, solo in about a month. Give it a shot if you have a wedding coming up — or read about how I built it.</p>
+        <div class="juno-links">
+          <a class="primary" href="juno/index.html">Read the case study →</a>
+          <a class="secondary" href="juno/evals/index.html">Evals instead of vibes</a>
+          <a class="secondary" href="juno/building/index.html">Building Juno with AI coding agents</a>
+        </div>
+      </div>
+      <a class="juno-shot" href="juno/index.html"><img src="juno/img/today.png" alt="Juno Today page" /></a>
+    </div>
+  </section>
+
+  <section id="writing">
+    <div class="label">WRITING</div>
+    <a class="writing-row" href="juno/index.html">
+      <span>
+        <span class="writing-title">Juno: an AI wedding planner</span>
+        <span class="writing-desc">The product case study — the design decisions and trust boundaries behind an AI agent that couples hand real work to.</span>
+      </span>
+      <span class="writing-arrow">→</span>
+    </a>
+    <a class="writing-row" href="juno/evals/index.html">
+      <span>
+        <span class="writing-title">Evals instead of vibes</span>
+        <span class="writing-desc">Quality infrastructure for an agent product: evaluate the production code path, score deterministically first, diff against committed baselines, and grow test cases from production failures.</span>
+      </span>
+      <span class="writing-arrow">→</span>
+    </a>
+    <a class="writing-row" href="juno/building/index.html">
+      <span>
+        <span class="writing-title">Steering AI coding agents effectively</span>
+        <span class="writing-desc">The spec-driven workflow that built Juno — where it broke down, why CI was the game changer, and what agent teams taught me about product work.</span>
+      </span>
+      <span class="writing-arrow">→</span>
+    </a>
+  </section>
+
+  <section id="ceramics">
+    <div class="ceramics-head">
+      <div class="label">CERAMICS</div>
+      <em>I occasionally make things on a wheel.</em>
+    </div>
+    <div class="ceramics-grid">
+      <a href="ceramics/index.html"><img src="ceramics/ramen-bowl.png" alt="Ramen bowl" /></a>
+      <a href="ceramics/index.html"><img src="ceramics/vase-french-white-n-cv-orange.png" alt="Vase, French White &amp; Orange" /></a>
+      <a href="ceramics/index.html"><img src="ceramics/mini-plates-amethyst.png" alt="Mini plates, Amethyst" /></a>
+      <a href="ceramics/index.html"><img src="ceramics/thin-neck-vase.png" alt="Thin neck vase" /></a>
+      <a href="ceramics/index.html"><img src="ceramics/plate-transparent-n-blue.png" alt="Plate, Transparent &amp; Blue" /></a>
+      <a href="ceramics/index.html"><img src="ceramics/blue-in-green-vase.png" alt="Blue in green vase" /></a>
+    </div>
+  </section>
+
+  <footer>
+    <h2>Feel free to reach out.</h2>
+    <a class="email-pill" href="mailto:jaeyoonjung95@gmail.com">jaeyoonjung95@gmail.com</a>
+    <div class="footer-links">
+      <a href="https://linkedin.com/in/jaeyoon-j/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/jaeyoon-jung" target="_blank" rel="noopener">GitHub</a>
+      <a href="ceramics/index.html">Ceramics</a>
+    </div>
+  </footer>
 </body>
 </html>

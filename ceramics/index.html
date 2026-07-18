@@ -4,165 +4,82 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ceramics — Jaeyoon Jung</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    :root {
+      --bg: #FBF7F0;
+      --ink: #241E17;
+      --clay: #B4552D;
+      --muted: #8a7d6b;
+      --body-muted: #5c5347;
+      --border: #E5DCCB;
+      --serif: 'Instrument Serif', Georgia, serif;
+      --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
     }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      background: #fff;
-      color: #1a1a1a;
+      background: var(--bg);
+      color: var(--ink);
     }
-
-    /* Nav */
-    nav {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 32px;
-      z-index: 10;
-    }
-
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      font-size: 0.85rem;
-      letter-spacing: 0.05em;
-      opacity: 0.9;
-    }
-
-    nav a:hover {
-      opacity: 0.6;
-    }
-
-    nav .site-name {
-      font-size: 1rem;
-      font-weight: 500;
-    }
-
-    /* Hero */
-    .hero {
-      position: relative;
-      height: 280px;
-      background: #1c1c1c;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #fff;
-    }
-
-    .hero h1 {
-      font-size: 2.4rem;
-      font-weight: 300;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-
-    .hero p {
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.75);
-      line-height: 1.8;
-    }
-
-    /* Grid */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 3px;
-      background: #e0e0e0;
-      margin-top: 3px;
-    }
-
-    .grid-item {
-      overflow: hidden;
-      background: #f5f5f5;
-    }
-
-    .grid-item img {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      display: block;
-      transition: transform 0.3s ease;
-    }
-
-    .grid-item:hover img {
-      transform: scale(1.03);
-    }
-
-    /* Footer */
-    footer {
-      padding: 40px 32px;
-      text-align: center;
-      font-size: 0.85rem;
-      color: #888;
-    }
-
-    footer a {
-      color: #888;
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      color: #1a1a1a;
-    }
-
-    @media (max-width: 480px) {
-      .grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .hero h1 {
-        font-size: 1.8rem;
-      }
+    a { color: var(--clay); text-decoration: none; }
+    a:hover { opacity: 0.75; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 26px 48px; }
+    .site-name { font-family: var(--serif); font-size: 24px; font-style: italic; color: var(--ink); }
+    .nav-links { display: flex; gap: 28px; font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+    .nav-links a { color: var(--ink); }
+    .nav-links a.accent { color: var(--clay); }
+    header { padding: 64px 48px 48px; }
+    .kicker { font-family: var(--mono); font-size: 13px; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 20px; }
+    h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(56px, 8vw, 96px); line-height: 1; margin-bottom: 20px; }
+    h1 em { color: var(--clay); }
+    .sub { font-family: var(--serif); font-style: italic; font-size: 24px; color: var(--body-muted); }
+    .band { background: var(--clay); height: 56px; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 64px 48px; }
+    figure img { width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 12px; transition: transform 0.3s ease; display: block; }
+    figure img:hover { transform: translateY(-8px); }
+    figcaption { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; color: var(--muted); margin-top: 10px; }
+    footer { padding: 48px; text-align: center; border-top: 1px solid var(--border); }
+    footer a { color: var(--muted); font-size: 15px; }
+    @media (max-width: 800px) {
+      nav, header { padding-left: 24px; padding-right: 24px; }
+      .nav-links { gap: 16px; }
+      .grid { grid-template-columns: repeat(2, 1fr); padding: 40px 24px; }
     }
   </style>
 </head>
 <body>
-
   <nav>
     <a class="site-name" href="../index.html">Jaeyoon Jung</a>
+    <div class="nav-links">
+      <a href="../index.html">Home</a>
+      <a href="../index.html#writing">Writing</a>
+      <a href="https://linkedin.com/in/jaeyoon-j/" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="accent" href="mailto:jaeyoonjung95@gmail.com">Email me</a>
+    </div>
   </nav>
 
-  <div class="hero">
-    <h1>Ceramics</h1>
-    <p>I occasionally make things on a wheel.</p>
-  </div>
+  <header>
+    <div class="kicker">OFF HOURS</div>
+    <h1>Ceramics<em>.</em></h1>
+    <p class="sub">I occasionally make things on a wheel.</p>
+  </header>
+
+  <div class="band"></div>
 
   <div class="grid">
-    <div class="grid-item">
-      <img src="ramen-bowl.png" alt="Ramen Bowl" />
-    </div>
-    <div class="grid-item">
-      <img src="vase-french-white-n-cv-orange.png" alt="Vase, French White & Orange" />
-    </div>
-    <div class="grid-item">
-      <img src="mini-plates-amethyst.png" alt="Mini Plates, Amethyst" />
-    </div>
-    <div class="grid-item">
-      <img src="thin-neck-vase.png" alt="Thin Neck Vase" />
-    </div>
-    <div class="grid-item">
-      <img src="plate-transparent-n-blue.png" alt="Plate, Transparent & Blue" />
-    </div>
-    <div class="grid-item">
-      <img src="blue-in-green-vase.png" alt="Blue in Green Vase" />
-    </div>
+    <figure><img src="ramen-bowl.png" alt="Ramen Bowl" /><figcaption>RAMEN BOWL</figcaption></figure>
+    <figure><img src="vase-french-white-n-cv-orange.png" alt="Vase, French White &amp; Orange" /><figcaption>VASE — FRENCH WHITE &amp; ORANGE</figcaption></figure>
+    <figure><img src="mini-plates-amethyst.png" alt="Mini Plates, Amethyst" /><figcaption>MINI PLATES — AMETHYST</figcaption></figure>
+    <figure><img src="thin-neck-vase.png" alt="Thin Neck Vase" /><figcaption>THIN NECK VASE</figcaption></figure>
+    <figure><img src="plate-transparent-n-blue.png" alt="Plate, Transparent &amp; Blue" /><figcaption>PLATE — TRANSPARENT &amp; BLUE</figcaption></figure>
+    <figure><img src="blue-in-green-vase.png" alt="Blue in Green Vase" /><figcaption>BLUE IN GREEN VASE</figcaption></figure>
   </div>
 
   <footer>
-    <a href="../index.html">← Back</a>
+    <a href="../index.html">← Back home</a>
   </footer>
-
 </body>
 </html>
