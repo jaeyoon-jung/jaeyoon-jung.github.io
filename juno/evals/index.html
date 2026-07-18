@@ -153,51 +153,65 @@
     <a class="back" href="../">← Juno case study</a>
 
     <h1>Evals instead of vibes</h1>
-    <p class="subtitle">The quality infrastructure behind a solo-built AI agent product — five design decisions I'd defend hardest, and the one judgment call no eval suite written in advance could capture.</p>
+    <p class="subtitle">The quality infrastructure behind a solo-built AI agent product: five design decisions I'd defend hardest, and the one judgment call no eval suite written in advance could capture.</p>
     <p class="meta">2026 · Part of the <a href="../">Juno</a> series</p>
 
     <p>
       <a href="../">Juno</a> is an AI wedding-planning studio with two LLM surfaces: an ingestion
-      pipeline that turns vendor email and documents into structured, reviewable changes, and June —
+      pipeline that turns vendor email and documents into structured, reviewable changes, and June,
       an agent that reads the whole workspace, answers questions, drafts outreach, and proposes
       changes. An agent product lives or dies on quality you can't see in a demo: does the pipeline
       catch the payment schedule buried in an email? Does June answer from the workspace's actual
       data, or does she make something up?
     </p>
     <p>
-      Early on I was judging prompt changes by re-running a few scenarios and eyeballing the output —
+      Early on I was judging prompt changes by re-running a few scenarios and eyeballing the output,
       which stops working the moment you have more than a handful of behaviors to protect. So both
       surfaces got eval harnesses, and the design decisions behind them are some of the ones I'd
       defend hardest in any review.
     </p>
 
     <div class="stats">
-      <span class="stat"><strong>22</strong><small>golden fixtures, ingestion harness</small></span>
+      <span class="stat"><strong>22</strong><small>golden fixtures (11 extract + 11 reconcile), ingestion harness</small></span>
       <span class="stat"><strong>21</strong><small>scenario fixtures across 7 suites, agent harness</small></span>
-      <span class="stat"><strong>36</strong><small>e2e tests across 6 spec files, in CI — not evals</small></span>
+      <span class="stat"><strong>36</strong><small>e2e tests across 6 spec files, in CI, not evals</small></span>
     </div>
 
     <h2>1. Evaluate the production code path, not a copy of it</h2>
     <p>
-      The harnesses run the real extraction and reconcile functions, and the real agent loop — with
-      database-backed tools swapped for fixture-backed ones that serve identical schemas from a
-      shared workspace snapshot. The tradeoff is more plumbing up front. The alternative — a
-      simplified "eval version" of the pipeline — silently drifts from what production actually
-      does, and then your scores measure nothing. When a metric moves in this setup, it moved
-      because the production behavior moved.
+      The ingestion harness imports and runs the real extract and reconcile functions plus the
+      real deterministic filter that backstops them. The agent harness drives the real agent loop,
+      the same function production calls, with the database-backed read tools swapped for
+      fixture-backed ones that serve the exact same tool names and schemas from a shared workspace
+      snapshot. No Postgres, no storage, no live model writes: approved workspace changes are
+      recorded for scoring, never executed.
+    </p>
+    <p>
+      Two seams the agent harness can't import directly, because they live in a server-only file, it
+      reimplements and then pins with a unit test that fails if the production contract drifts: the
+      rule that carries a previous run's transcript into a resume, and the couple-facing resolution
+      copy. The tradeoff for all of this is more plumbing up front. The alternative, a simplified
+      "eval version" of the pipeline, silently drifts from what production actually does, and then
+      your scores measure nothing. When a metric moves in this setup, it moved because the
+      production behavior moved.
     </p>
 
     <h2>2. Deterministic scoring first; an LLM judge only where determinism fails</h2>
     <p>
       Most of what matters is checkable in plain code: did the right entities come out, with the
-      right key fields, the right statuses, the right tool calls made — and the forbidden ones
-      <em>not</em> made. An LLM judge is reserved for the genuinely fuzzy residue: is "Confirm final
-      headcount with caterer" the same task as "caterer needs guest count"? Is an answer actually
-      supported by what the tools returned?
+      right key fields, the right statuses, the right tool calls made, and the forbidden ones
+      <em>not</em> made. That last part carries the safety weight. The agent scorer pins that June
+      never calls an unmounted tool, never returns a tool error, and never trips a global deny-list
+      on sending or paying. An LLM judge is reserved for the genuinely fuzzy residue: is "Confirm
+      final headcount with caterer" the same task as "caterer needs guest count"? Is an answer
+      actually grounded in what the tools returned? Does a draft sound like June?
     </p>
     <p>
-      Judges are convenient, so the temptation is to let one grade everything — but a judge is
-      itself a model that drifts and has blind spots. Keeping its scope narrow keeps the scores
+      Judges are convenient, so the temptation is to let one grade everything, but a judge is
+      itself a model that drifts and has blind spots. So its scope is deliberately narrow: the
+      ingestion judge only settles free-text field equivalence and pairings the fuzzy matcher
+      couldn't decide, never re-scoring what determinism already scored, and its results are
+      skippable with a flag. Keeping the judge narrow keeps the scores
       auditable: when a metric moves, I can almost always point to the exact deterministic check
       that moved it.
     </p>
@@ -205,51 +219,57 @@
     <h2>3. A committed baseline instead of pass/fail thresholds</h2>
     <p>
       Absolute thresholds ("extraction accuracy must exceed 90%") invite gaming and hide slow decay.
-      Instead, every eval run diffs against a baseline file checked into the repo, and updating that
-      baseline is an explicit, reviewable commit. A prompt change that trades recall on contracts
-      for precision on tasks shows up as exactly that — a diff a reviewer can reason about, not a
-      green checkmark.
+      Instead, each harness diffs every run against a committed baseline file (one for ingestion,
+      one for the agent), and updating that baseline is an explicit, reviewable commit behind a
+      dedicated flag that refuses to write if any fixture errored out. A prompt change that trades
+      recall on contracts for precision on tasks shows up as exactly that, a diff a reviewer can
+      reason about, not a green checkmark.
     </p>
 
     <h2>4. Evals are not CI</h2>
     <p>
       Eval runs call the real model APIs: they cost money and are nondeterministic, which makes them
-      terrible PR gates. So the two systems are deliberately separate. CI exercises every
-      user-facing flow end-to-end — 36 Playwright tests across 6 spec files, against real auth and
-      row-level security, with deterministic mock model responses. CI answers "does the machinery
-      work?" Evals run on demand with repeat trials to average out variance, and answer "is the
-      model's judgment good?" Conflating the two gets you flaky CI and eval suites nobody runs.
+      terrible PR gates. So the two systems are deliberately separate. The eval scripts live outside
+      <code>npm test</code> and never run in CI. CI exercises every user-facing flow end-to-end: 36
+      Playwright tests across 6 spec files, against real auth and row-level security, with
+      deterministic mock model responses. CI answers "does the machinery work?" Evals run on demand
+      with repeat trials to average out variance, and answer "is the model's judgment good?"
+      Conflating the two gets you flaky CI and eval suites nobody runs.
     </p>
 
-    <h2>5. Test cases come from production failures — carefully</h2>
+    <h2>5. Test cases come from production failures, carefully</h2>
     <p>
-      When June gets something wrong, I flag the run in the UI, which snapshots everything the
-      failing run saw: the conversation, and the workspace state <em>at that moment</em>, so the
-      case still reproduces after the live data moves on. Two guardrails I added after thinking
-      about how this could go wrong:
+      When June gets something wrong, a privileged flag button in the UI snapshots everything the
+      failing run saw into a locked-down table: the conversation, the run transcript, and the
+      workspace state <em>at that moment</em>, so the case still reproduces after the live data
+      moves on. A separate export command reshapes open flags into <em>draft</em> fixtures that sit
+      in a drafts folder, outside the validated fixture directories the tests actually load. Nothing
+      becomes a real test case automatically. Two guardrails enforce that:
     </p>
     <ul>
       <li>
-        <strong>The flagged output never becomes the expected answer.</strong> It's preserved as
-        reference, but a human writes what <em>should</em> have happened. Otherwise the suite would
-        enshrine the exact failure it was meant to catch.
+        <strong>The flagged output never becomes the expected answer.</strong> The draft's expected
+        fields are seeded with placeholders, not the model's output; the flagged output is preserved
+        separately, labeled as the wrong answer, and a human writes what <em>should</em> have
+        happened. Otherwise the suite would enshrine the exact failure it was meant to catch.
       </li>
       <li>
         <strong>Every case passes through human review and redaction before promotion.</strong>
-        Production data contains real names, real vendors, and real money.
+        Production data contains real names, real vendors, and real money, so a draft is promoted
+        out of the drafts folder by hand, never on export.
       </li>
     </ul>
 
     <h2>The case that made the flag loop essential</h2>
     <p>
-      I expected the hard eval problems to be extractive — dates, amounts, payment schedules. They
-      weren't. The hardest judgment June has to make is <strong>editorial</strong>: of the hundred
+      I expected the hard eval problems to be extractive: dates, amounts, payment schedules. They
+      weren't. The hardest judgment June has to make is <strong>editorial</strong>. Of the hundred
       small facts flowing through vendor threads, which ones are <em>decisions worth logging</em>
       and making visible to the couple? "We're going with the family-style menu" clearly is.
       "The florist prefers Tuesday deliveries" clearly isn't. Most of real life sits in between.
     </p>
     <p>
-      I tried to write that boundary down ahead of time and couldn't — and an eval suite authored in
+      I tried to write that boundary down ahead of time and couldn't, and an eval suite authored in
       a vacuum just encodes the author's guess. What actually works is running the product on my own
       wedding and letting the disagreements become data: every time June logs noise or misses a real
       decision, the flag pipeline turns that moment into a fixture with a human-written expected
