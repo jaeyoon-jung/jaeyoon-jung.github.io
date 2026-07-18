@@ -73,6 +73,17 @@
       margin-bottom: 16px;
     }
 
+    .writing-item {
+      margin-bottom: 18px;
+    }
+
+    .writing-item .desc {
+      display: block;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
     .links {
       margin-top: 56px;
       display: flex;
@@ -120,12 +131,28 @@
     </p>
 
     <p>
-      One of my big projects during the break is planning my own wedding — so naturally, I built <a href="https://getjuno.tech/" target="_blank" rel="noopener">Juno</a>, an AI agent for wedding planning. Give it a shot if you have a wedding coming up — or <a href="juno/index.html">read about how I built it</a>.
+      One of my big projects during the break is planning my own wedding — so naturally, I built <a href="https://getjuno.tech/" target="_blank" rel="noopener">Juno</a>, an AI agent for wedding planning, solo in about a month. Give it a shot if you have a wedding coming up — or read about how I built it below.
     </p>
 
     <p>
       Feel free to reach out!
     </p>
+
+    <div class="section">
+      <div class="section-label">Writing</div>
+      <div class="writing-item">
+        <a href="juno/index.html">Juno: an AI wedding planner you can actually trust</a>
+        <span class="desc">The product case study — the design decisions and trust boundaries behind an AI agent that couples hand real work to, and what running my own wedding on it has taught me.</span>
+      </div>
+      <div class="writing-item">
+        <a href="juno/evals/index.html">Evals instead of vibes</a>
+        <span class="desc">Quality infrastructure for an agent product: evaluate the production code path, score deterministically first, diff against committed baselines, and grow test cases from production failures.</span>
+      </div>
+      <div class="writing-item">
+        <a href="juno/building/index.html">Building Juno solo, in a month, with AI coding agents</a>
+        <span class="desc">The spec-driven workflow behind the build — where it broke down, why CI was the game changer, and what agent teams taught me about product work.</span>
+      </div>
+    </div>
 
     <div class="links">
       <a href="ceramics/index.html">Ceramics</a>

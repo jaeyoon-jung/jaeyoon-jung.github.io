@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Juno — an AI wedding planner | Jaeyoon Jung</title>
-  <meta name="description" content="How I built Juno, an AI-agent wedding planning studio: product thinking, agent architecture, and the trust boundaries that make an AI agent safe to use." />
+  <title>Juno: an AI wedding planner | Jaeyoon Jung</title>
+  <meta name="description" content="How I built Juno, an AI-agent wedding planning studio, solo in about a month, and now run my own wedding on it. A case study in the trust boundaries that make an AI agent safe to use." />
   <style>
     :root {
       --text: #1a1a1a;
@@ -59,6 +59,12 @@
     }
 
     .meta {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 12px;
+    }
+
+    .series {
       color: var(--muted);
       font-size: 0.85rem;
       margin-bottom: 48px;
@@ -175,6 +181,7 @@
       padding-top: 24px;
       border-top: 1px solid var(--border);
       display: flex;
+      flex-wrap: wrap;
       gap: 20px;
       font-size: 0.95rem;
     }
@@ -199,20 +206,31 @@
     <a class="back" href="/">← Jaeyoon Jung</a>
 
     <h1>Juno: an AI wedding planner you can actually trust</h1>
-    <p class="subtitle">A solo-built, production-deployed AI agent product — and a case study in designing the trust boundaries that make an agent safe to hand real work to.</p>
+    <p class="subtitle">An AI-agent product I built solo in about a month, and now use to run my own wedding. A case study in designing the trust boundaries that make an agent safe to hand real work to.</p>
     <p class="meta">2026 · <a href="https://getjuno.tech/" target="_blank" rel="noopener">getjuno.tech</a> · Next.js, Postgres, Claude</p>
+    <p class="series">Deep dives: <a href="evals/">Evals instead of vibes</a> · <a href="building/">Building Juno with AI coding agents</a></p>
 
     <p>
       While planning my own wedding, I kept hitting the same three problems every couple hits:
       there's <strong>no source of truth</strong> (decisions live across email threads, calls, contracts, and chat),
       the <strong>project-management overhead</strong> is enormous, and
-      <strong>you've never done this before</strong> — you plan a wedding exactly once, with no way to know if you've covered everything.
+      <strong>you've never done this before</strong> (you plan a wedding exactly once, with no way to know if you've covered everything).
     </p>
     <p>
-      Juno is my answer: a private planning studio for one couple, with an experienced-planner agent
-      — <strong>June</strong> — working behind it. You forward vendor emails to her, upload contracts and
+      Juno is my answer. Two names, one letter apart, so let me be precise.
+      <strong>Juno</strong> is the product, a private planning studio for one couple.
+      <strong>June</strong> is the planner who works inside it: an agent with her own inbox, her own
+      voice, and deliberately limited powers. You forward vendor emails to June, upload contracts and
       proposals, and ask her to handle things. She reads everything, keeps the workspace current, and
-      drafts outreach — but <em>every</em> change to your plan passes through your explicit approval.
+      drafts outreach, but <em>every</em> change to your plan passes through your explicit approval.
+    </p>
+    <p>
+      The wedge is specific, because I lived it. We locked in the big, obvious vendor decisions
+      (venue, caterer, photographer, florals) ourselves. At that point, hiring a human planner for
+      thousands of dollars stops making sense. But that's exactly when the real work begins: months
+      of small logistical and aesthetic decisions, dozens of vendor threads, none of it droppable,
+      all of it living in email. A project that is high-stakes, email-centric, bounded in scope, and
+      run by first-timers is close to an ideal shape for an agent, if the couple can trust it.
     </p>
 
     <figure class="wide">
@@ -230,7 +248,7 @@
       <li>
         <strong>Low AI visibility.</strong> Juno never brands itself as "AI" or a "copilot." June is a
         wedding-planner persona; features feel like drafting, organizing, and matching. The design
-        language follows: ivory and stone surfaces, serif display type, hairline borders — a design
+        language follows: ivory and stone surfaces, serif display type, hairline borders. A design
         studio, not a SaaS dashboard with purple gradients.
       </li>
       <li>
@@ -242,17 +260,22 @@
 
     <figure class="wide">
       <img src="img/tasks.png" alt="Kanban board with five status columns and shared category filters" loading="lazy" />
-      <figcaption>The board: five statuses, drag-and-drop, one shared category taxonomy across tasks, contracts, and decisions. Note the "Needs your input" dot — a June run paused on that task, waiting for an answer.</figcaption>
+      <figcaption>The board: five statuses, drag-and-drop, one shared category taxonomy across tasks, contracts, and decisions. Note the "Needs your input" dot, where a June run paused on that task, waiting for an answer.</figcaption>
+    </figure>
+
+    <figure class="wide">
+      <img src="img/contracts.png" alt="Contracts page showing in-review and signed vendor agreements with totals, payments made, and upcoming payment schedules" loading="lazy" />
+      <figcaption>Contracts: totals, what's paid, what's owed, and when it's due. Payment schedules answer the money questions that actually bite, a deliberate substitute for a full budgeting product (more on that below).</figcaption>
     </figure>
 
     <figure class="wide">
       <img src="img/timeline.png" alt="Wedding week timeline with day-grouped agenda" loading="lazy" />
-      <figcaption>The wedding week: day-grouped agenda with side-by-side lanes for concurrent events. Times are stored as venue wall-clock — "4:30pm" means 4:30pm at the venue, no matter where you view it from.</figcaption>
+      <figcaption>The wedding week: day-grouped agenda with side-by-side lanes for concurrent events. Times are stored as venue wall-clock, so "4:30pm" means 4:30pm at the venue, no matter where you view it from.</figcaption>
     </figure>
 
     <h2>Email in, reviewed changes out</h2>
     <p>
-      The core insight: the source of truth already exists — it's just trapped in vendor email.
+      The core insight: the source of truth already exists. It's just trapped in vendor email.
       So each workspace gets its own planner email address. Forward a vendor thread (or just CC June),
       and an ingestion pipeline turns it into structured, reviewable changes:
     </p>
@@ -273,12 +296,12 @@
     <p class="flow-caption">
       The two-stage LLM pipeline (extract, then reconcile) is shared by email and uploaded documents.
       Reconcile sees the whole batch alongside existing data, so a new email can update an existing
-      proposal in place or supersede one that a newer fact made obsolete — instead of piling up duplicates.
+      proposal in place or supersede one that a newer fact made obsolete, instead of piling up duplicates.
     </p>
 
     <figure class="wide">
       <img src="img/review.png" alt="Review queue showing a vendor email thread and proposed changes with Edit, Approve and Reject buttons" loading="lazy" />
-      <figcaption>The review queue. Each vendor thread groups its proposed changes; every field is editable before approving. The pipeline never writes to the plan directly — approval does.</figcaption>
+      <figcaption>The review queue. Each vendor thread groups its proposed changes; every field is editable before approving. The pipeline never writes to the plan directly; approval does.</figcaption>
     </figure>
 
     <p>
@@ -287,13 +310,13 @@
     <ul>
       <li>
         <strong>LLM output gets a deterministic backstop.</strong> Before anything persists, a plain-code
-        filter rejects operations the model shouldn't be able to make — like a stale email walking a
+        filter rejects operations the model shouldn't be able to make, like a stale email walking a
         signed contract back to "in review," or reopening a completed task. The model proposes;
         deterministic code enforces the invariants.
       </li>
       <li>
         <strong>Email admission is deterministic, not inferred.</strong> Only a confirmed sender or an
-        already-admitted thread can get mail into the workspace — the model never decides routing.
+        already-admitted thread can get mail into the workspace. The model never decides routing.
         Everything ambiguous lands in an operator-only quarantine, invisible to the couple and to the agent.
       </li>
     </ul>
@@ -301,7 +324,7 @@
     <h2>Why June has her own inbox</h2>
     <p>
       One design decision I find most interesting: June doesn't touch the couple's email at all.
-      Each workspace gets its own inbox — a real address like <code>june-…@agentmail.to</code> —
+      Each workspace gets its own inbox, a real address like <code>june-…@agentmail.to</code>,
       that the couple forwards or CCs vendor threads to. Everything June reads arrives there; only
       mail from senders the couple has confirmed (or replies on threads June is already part of)
       gets in, and with an explicit opt-in, an approved outreach draft actually sends <em>from
@@ -316,36 +339,42 @@
       <li>
         <strong>Access should be proportional to the job.</strong> Wedding planning needs maybe a
         few dozen vendor threads; inbox access grants years of financial, medical, and personal
-        history. Asking for that much trust for that narrow a goal is bad product design — and a
+        history. Asking for that much trust for that narrow a goal is bad product design, and a
         forwarding address means the couple decides, thread by thread, what the agent ever sees.
       </li>
       <li>
-        <strong>It's OK for an AI to sound like an AI — as long as it isn't wearing your name.</strong>
+        <strong>It's OK for an AI to sound like an AI, as long as it isn't wearing your name.</strong>
         If June sends from her own address, an occasional stiff sentence or awkward choice is fine:
         everyone can see it's a third party assisting, not the couple. People already burn real
         effort making their email sound good <em>and</em> human; handing the correspondence to a
         visibly separate persona lifts that burden entirely. Sending the same words from the
-        couple's own address would put their reputation behind every sentence — which would demand
+        couple's own address would put their reputation behind every sentence, which would demand
         near-perfection from the model and forgive nothing.
       </li>
       <li>
         <strong>It mirrors how working with a real planner already works.</strong> Vendors are used
-        to "hi, I'm coordinating on behalf of the couple" — a planner with her own email address is
+        to "hi, I'm coordinating on behalf of the couple." A planner with her own email address is
         a familiar social pattern, not a new behavior anyone has to learn. That lowers the barrier
         on both sides of the conversation.
       </li>
       <li>
         <strong>It bounds the agent's context.</strong> A dedicated inbox means everything in it is,
-        by construction, wedding-relevant — no filtering a lifetime of mail to find the signal, no
+        by construction, wedding-relevant: no filtering a lifetime of mail to find the signal, no
         token budget spent on noise, and no risk of the model getting confused (or influenced) by
         unrelated correspondence. The context problem largely disappears when the mailbox itself is
         the boundary.
       </li>
     </ul>
+    <p>
+      This is the design decision production has validated most clearly. I expected getting vendors
+      to correspond with an AI to be the awkward part; instead, they simply started replying to June
+      directly, the way they would to any coordinator. The persona and the dedicated address did the
+      work: no explanation needed, no behavior to teach.
+    </p>
 
     <h2>June: an agent with a structural firewall</h2>
     <p>
-      Every chat conversation — a quick question, or "handle this task for me" — runs on one
+      Every chat conversation, a quick question or "handle this task for me," runs on one
       background engine. June can read the whole workspace, read ingested email and parsed documents,
       and search the web. When she needs something from you, the run <em>pauses</em>: a question,
       an email draft, or a proposed workspace change becomes a card in the conversation, and the run
@@ -354,17 +383,19 @@
 
     <figure class="wide">
       <img src="img/chat-write.png" alt="Chat with June showing an answered question, an outreach email draft, a steering reply, and a proposed workspace change awaiting approval" loading="lazy" />
-      <figcaption>One June run on a task: she asks about budget, drafts vendor outreach, and proposes a follow-up task — each a gate the couple explicitly clears. The reply box doubles as the approval surface: "Looks great — go ahead" resumes the run.</figcaption>
+      <figcaption>One June run on a task: she asks about budget, drafts vendor outreach, and proposes a follow-up task, each a gate the couple explicitly clears. The reply box doubles as the approval surface: "Looks great, go ahead" resumes the run.</figcaption>
     </figure>
 
     <p>
       The safety model is the part I'd defend in any design review:
       <strong>the capability firewall is structural, not prompted.</strong> There is no send-email tool
-      and no payment tool anywhere in the agent's tool registry — not "the prompt says don't,"
-      but <em>the capability does not exist</em>. Sending an approved email happens as a
-      <em>user</em> action at the approval seam (idempotent via a unique per-draft send claim, so
-      double-clicking Approve can't double-send). A unit test pins the allowlist so a future refactor
-      can't quietly hand the model send authority.
+      and no payment tool anywhere in the agent's tool registry. It isn't "the prompt says don't,"
+      it's that <em>the capability does not exist</em>. The workspace has 70 server actions; only 57 are
+      registered as agent tools, and the gap is deliberate: sends, uploads, invites, and review-queue
+      approvals are user-only. Sending an approved email happens as a <em>user</em> action at the
+      approval seam (idempotent via a unique per-draft send claim, so double-clicking Approve can't
+      double-send). A unit test pins the allowlist so a future refactor can't quietly hand the model
+      send authority.
     </p>
     <p>
       A few more agent-engineering details under the hood:
@@ -372,7 +403,7 @@
     <ul>
       <li>
         <strong>Conversations survive runs.</strong> A follow-up message carries the previous run's full
-        transcript forward — tool results, drafts, approvals — with dangling tool-calls repaired and a
+        transcript forward (tool results, drafts, approvals) with dangling tool-calls repaired and a
         character-budget trim that blanks old tool results without breaking the transcript structure.
         June remembers what she found; she doesn't start over.
       </li>
@@ -387,74 +418,84 @@
       </li>
     </ul>
 
+    <h2>What I cut</h2>
+    <p>
+      A month of solo scope means saying no to things that would appear in any competitor's feature
+      matrix. The clearest cut was <strong>budget tracking</strong>. Every wedding tool has a budget
+      module; I skipped it. Contract payment schedules already answer the money questions that
+      actually bite (what's owed, to whom, by when) as a side effect of data the pipeline extracts
+      anyway. A full budgeting product (envelopes, forecasts, category rollups) is a different
+      product, and building a mediocre version of it would have taken weeks away from the thing only
+      Juno does: turning vendor email into a plan you can trust. Depth on the coordination loop beat
+      breadth on the checklist.
+    </p>
+
+    <h2>Running my own wedding on it</h2>
+    <p>
+      Juno isn't a demo I built and moved on from. It's how my wedding is actually being planned.
+      Every vendor thread now includes June. At any given time the board holds roughly thirty live
+      tasks in equal thirds: about ten in the backlog, ten waiting on us, and ten waiting on vendors.
+      The couple-side work is executing on a vision, a stream of logistical and aesthetic decisions,
+      and keeping track of all of it is exactly the job Juno was built for.
+    </p>
+    <p>
+      How do I know if it's working? The metric I watch is <strong>tasks completed by June, and how
+      many days a task sits in progress</strong>. So much of a wedding is locking in details sooner:
+      every early decision returns time to the couple and surfaces downstream risks while they're
+      still cheap. And the metric is honest by construction: nothing forces a couple to route work
+      through June. They can complete any task themselves, so if June is completing tasks, it's
+      because she earned them.
+    </p>
+    <p>
+      Two lessons from production that no amount of building in private would have taught me:
+    </p>
+    <ul>
+      <li>
+        <strong>The hardest model problem is editorial, not extractive.</strong> June's biggest
+        struggle isn't parsing a payment schedule out of an email. It's judging which of the
+        hundred small facts flowing past is a <em>decision worth logging</em> and making visible.
+        I couldn't define that judgment in a vacuum, and neither could an eval suite written ahead
+        of time. So the eval dataset grows from real life: when June gets it wrong, I flag the run
+        in the UI and it becomes a test case.
+      </li>
+      <li>
+        <strong>Agent costs compound quietly.</strong> I started on Claude Sonnet and Opus with a
+        deliberate bias: get the product <em>functional</em> as fast as possible, optimize spend
+        later. Later arrived quickly. I've since introduced a model router so I can experiment with
+        different models per task, routing cheap, structured work away from frontier models without
+        touching the surfaces where judgment matters. That's a future article of its own.
+      </li>
+    </ul>
+
     <h2>Evals instead of vibes</h2>
     <p>
       An agent product lives or dies on quality you can't see in a demo: does the extraction pipeline
       catch the payment schedule buried in an email? Does June answer from the workspace's actual
-      data, or does she make something up? Early on I was judging prompt changes by re-running a few
-      scenarios and eyeballing the output — which stops working the moment you have more than a
-      handful of behaviors to protect. So I built eval harnesses for both LLM surfaces (the ingestion
-      pipeline and the agent), and the design decisions there are some of the ones I'd defend hardest.
+      data, or does she make something up? Both LLM surfaces have eval harnesses (22 golden fixtures
+      for the ingestion pipeline, 21 scenario fixtures across 7 suites for the agent) built on a few
+      opinionated principles: evaluate the production code path rather than a copy of it, score
+      deterministically first and use an LLM judge only for the genuinely fuzzy residue, diff every
+      run against a committed baseline instead of gaming a pass/fail threshold, and keep evals
+      deliberately separate from CI. The full reasoning is in
+      <a href="evals/">Evals instead of vibes</a>.
     </p>
-    <ul>
-      <li>
-        <strong>Evaluate the production code path, not a copy of it.</strong> The harnesses run the
-        real extraction and reconcile functions, and the real agent loop — with database-backed tools
-        swapped for fixture-backed ones that serve identical schemas from a workspace snapshot. The
-        tradeoff is more plumbing up front, but the alternative (a simplified "eval version" of the
-        pipeline) silently drifts from what production actually does, and then your scores measure
-        nothing.
-      </li>
-      <li>
-        <strong>Deterministic scoring first; an LLM judge only where determinism fails.</strong>
-        Most of what matters is checkable in plain code: did the right entities come out, with the
-        right key fields, the right statuses, the right tool calls made — and the forbidden ones not
-        made. An LLM judge is reserved for the genuinely fuzzy residue: is "Confirm final headcount
-        with caterer" the same task as "caterer needs guest count"? Is an answer actually supported
-        by what the tools returned? Judges are convenient, so the temptation is to let one grade
-        everything — but a judge is itself a model that drifts and has blind spots. Keeping its
-        scope narrow keeps the scores auditable: when a metric moves, I can almost always point to
-        the exact deterministic check that moved it.
-      </li>
-      <li>
-        <strong>A committed baseline instead of pass/fail thresholds.</strong> Absolute thresholds
-        ("extraction accuracy must exceed 90%") invite gaming and hide slow decay. Instead, every
-        eval run diffs against a baseline file checked into the repo, and updating that baseline is
-        an explicit, reviewable commit. A prompt change that trades recall on contracts for precision
-        on tasks shows up as exactly that — a diff a reviewer can reason about, not a green checkmark.
-      </li>
-      <li>
-        <strong>Evals are not CI.</strong> Eval runs call the real model APIs: they cost money and
-        are nondeterministic, which makes them terrible PR gates. So the two systems are deliberately
-        separate — CI exercises every user-facing flow end-to-end against deterministic mock model
-        responses (does the machinery work?), while evals run on demand with repeat trials to
-        average out variance (is the model's judgment good?). Conflating the two gets you flaky CI
-        and eval suites nobody runs.
-      </li>
-      <li>
-        <strong>Test cases come from production failures, carefully.</strong> When June gets
-        something wrong, I can flag the run in the UI, which snapshots everything the failing run
-        saw — the conversation, and the workspace state <em>at that moment</em>, so the case still
-        reproduces after the live data moves on. Two guardrails I added after thinking about how
-        this could go wrong: the flagged (bad) output is preserved as reference but never becomes
-        the expected answer — a human writes what <em>should</em> have happened, otherwise the suite
-        would enshrine the failure it was meant to catch — and every case passes through human
-        review and redaction before promotion, because production data contains real names, vendors,
-        and money.
-      </li>
-    </ul>
 
     <h2>How it was built</h2>
     <p>
-      Juno is a solo project, built in roughly two months alongside actually planning the wedding —
-      and it's also my testbed for AI-native development. I ran a spec-driven workflow with AI coding
-      agents: each feature goes roadmap → written spec → implementation plan → task list → implementation,
-      with the repo's conventions and invariants maintained in an agents-facing architecture document
-      that keeps every session grounded. Four quality gates (lint, typecheck, unit tests, production
-      build) plus a Playwright e2e suite against real auth and RLS run on every PR.
+      Juno is a solo project, built in about a month alongside actually planning the wedding, and
+      it's also my testbed for AI-native development. I ran a spec-driven workflow with AI coding
+      agents (Claude Code and Codex): each feature goes roadmap → spec → plan → task list →
+      implementation, with the repo's conventions and invariants maintained in an
+      agents-facing architecture document that keeps every session grounded. Four quality gates
+      (lint, typecheck, unit tests, production build) plus a 36-test Playwright e2e suite against
+      real auth and RLS run on every PR. What worked, what broke, and what it taught me about
+      building with agent teams is in <a href="building/">its own write-up</a>.
     </p>
+
     <div class="footer-links">
       <a href="https://getjuno.tech/" target="_blank" rel="noopener">Try Juno</a>
+      <a href="evals/">Evals instead of vibes</a>
+      <a href="building/">Building Juno with AI coding agents</a>
       <a href="/">About me</a>
       <a href="mailto:jaeyoonjung95@gmail.com">Email</a>
     </div>
